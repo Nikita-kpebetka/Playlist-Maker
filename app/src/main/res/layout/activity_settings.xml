@@ -10,40 +10,39 @@
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent">
 
-
         <Button
+            android:id="@+id/backButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:backgroundTint="@color/white"
             android:gravity="start|center_vertical"
-            android:paddingStart="16dp"
-            android:text="Настройки"
+            android:paddingStart="@dimen/standard_margin"
+            android:text="@string/Settings"
             android:textAllCaps="false"
             android:textColor="@color/text"
-            android:textSize="22sp"
+            android:textSize="@dimen/header_button_text_size"
             android:textStyle="bold"
             app:cornerRadius="0dp"
             app:elevation="0dp"
             app:icon="@drawable/arrow_back"
             app:iconGravity="textStart"
-            app:iconPadding="12dp"
-            app:iconSize="24dp"
+            app:iconPadding="@dimen/button_icon_padding"
+            app:iconSize="@dimen/button_icon_size"
             app:iconTint="#1A1B22" />
-
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="61dp"
             android:layout_marginTop="24dp"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/standard_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
-                android:text="Темная тема"
+                android:text="@string/Dark_theme"
                 android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:textSize="@dimen/settings_text_size" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="wrap_content"
@@ -53,70 +52,72 @@
                 app:trackTint="#00D6C3" />
         </FrameLayout>
 
-
         <FrameLayout
+            android:id="@+id/shareApp"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:clickable="true"
             android:focusable="true"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/standard_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
-                android:text="Поделиться приложением"
+                android:text="@string/Share_app"
                 android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:textSize="@dimen/settings_text_size" />
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/button_icon_size"
+                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
                 android:src="@drawable/share" />
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/writeSupport"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:clickable="true"
             android:focusable="true"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/standard_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
-                android:text="Написать в поддержку"
+                android:text="@string/Write_to_support"
                 android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:textSize="@dimen/settings_text_size" />
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/button_icon_size"
+                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
                 android:src="@drawable/support" />
 
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/userAgreement"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:clickable="true"
             android:focusable="true"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/standard_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
-                android:text="Пользовательское соглашение"
+                android:text="@string/User_Agreement"
                 android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:textSize="@dimen/settings_text_size" />
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/button_icon_size"
+                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
                 android:src="@drawable/arrow_forward" />
 
