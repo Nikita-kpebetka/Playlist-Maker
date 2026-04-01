@@ -37,7 +37,7 @@
                 android:layout_marginBottom="@dimen/standard_margin"
                 android:text="@string/Search"
                 android:textAllCaps="false"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/header_button_text_size"
                 app:backgroundTint="@color/white"
                 app:cornerRadius="@dimen/button_corner_radius"
@@ -45,7 +45,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="@dimen/button_icon_padding"
                 app:iconSize="@dimen/button_icon_size"
-                app:iconTint="@color/text" />
+                app:iconTint="@color/cl_text" />
 
             <Button
                 android:id="@+id/media_library"
@@ -55,7 +55,7 @@
                 android:layout_marginBottom="@dimen/standard_margin"
                 android:text="@string/Media_library"
                 android:textAllCaps="false"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/header_button_text_size"
                 app:backgroundTint="@color/white"
                 app:cornerRadius="@dimen/button_corner_radius"
@@ -63,7 +63,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="@dimen/button_icon_padding"
                 app:iconSize="@dimen/button_icon_size"
-                app:iconTint="@color/text" />
+                app:iconTint="@color/cl_text" />
 
             <Button
                 android:id="@+id/settings"
@@ -73,7 +73,7 @@
                 android:layout_marginBottom="@dimen/standard_margin"
                 android:text="@string/Settings"
                 android:textAllCaps="false"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/header_button_text_size"
                 app:backgroundTint="@color/white"
                 app:cornerRadius="@dimen/button_corner_radius"
@@ -81,7 +81,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="@dimen/button_icon_padding"
                 app:iconSize="@dimen/button_icon_size"
-                app:iconTint="@color/text" />
+                app:iconTint="@color/cl_text" />
 
 
         </LinearLayout>

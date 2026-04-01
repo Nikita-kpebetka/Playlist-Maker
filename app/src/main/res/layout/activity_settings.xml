@@ -10,26 +10,32 @@
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/backButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:backgroundTint="@color/white"
-            android:gravity="start|center_vertical"
-            android:paddingStart="@dimen/standard_margin"
-            android:text="@string/Settings"
-            android:textAllCaps="false"
-            android:textColor="@color/text"
-            android:textSize="@dimen/header_button_text_size"
-            android:textStyle="bold"
-            app:cornerRadius="0dp"
-            app:elevation="0dp"
-            app:icon="@drawable/arrow_back"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/button_icon_padding"
-            app:iconSize="@dimen/button_icon_size"
-            app:iconTint="#1A1B22" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/standard_margin">
 
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="@dimen/button_icon_size"
+                android:layout_height="@dimen/button_icon_size"
+                android:src="@drawable/arrow_back"
+                app:tint="#1A1B22"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/button_icon_padding"
+                android:text="@string/Settings"
+                android:textColor="@color/cl_text"
+                android:textSize="@dimen/header_button_text_size"
+                android:textStyle="bold" />
+
+        </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="61dp"
@@ -41,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
                 android:text="@string/Dark_theme"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/settings_text_size" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -65,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
                 android:text="@string/Share_app"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/settings_text_size" />
 
             <ImageView
@@ -88,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
                 android:text="@string/Write_to_support"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/settings_text_size" />
 
             <ImageView
@@ -112,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
                 android:text="@string/User_Agreement"
-                android:textColor="@color/text"
+                android:textColor="@color/cl_text"
                 android:textSize="@dimen/settings_text_size" />
 
             <ImageView
