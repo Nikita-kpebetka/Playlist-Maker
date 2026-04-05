@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cl_text">#FFFFFFFF</color>
+    <color name="white">#1A1B22</color>
+    <color name="main_background">#1A1B22</color>
+    <color name="button_bark_theme">#3772E7</color>
+
+</resources>

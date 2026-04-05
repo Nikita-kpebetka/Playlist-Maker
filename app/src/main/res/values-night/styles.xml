@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="buttons_main">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginBottom">@dimen/standard_margin</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/header_button_text_size</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="iconPadding">@dimen/button_icon_padding</item>
+        <item name="iconSize">@dimen/button_icon_size</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+    </style>
+
+</resources>
