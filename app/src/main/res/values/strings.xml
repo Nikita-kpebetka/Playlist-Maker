@@ -7,4 +7,8 @@
     <string name="Search">Поиск</string>
     <string name="Media_library">Медиатека</string>
     <string name="Settings">Настройки</string>
+    <string name="Share_click">https://practicum.yandex.com/android-developer/?from=catalog</string>
+    <string name="My_email">kbetkabmope@gmail.com</string>
+
+<!--    <string name="..."></string>-->
 </resources>

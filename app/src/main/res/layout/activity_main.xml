@@ -32,19 +32,19 @@
                 android:id="@+id/magnifier"
                 android:text="@string/Search"
                 app:icon="@drawable/ic_magnifier"
-                style="@style/buttons_main"/>
+                style="@style/Buttons_main"/>
 
             <Button
                 android:id="@+id/media_library"
                 android:text="@string/Media_library"
                 app:icon="@drawable/ic_media_library"
-                style="@style/buttons_main"/>
+                style="@style/Buttons_main"/>
 
             <Button
                 android:id="@+id/settings"
                 android:text="@string/Settings"
                 app:icon="@drawable/ic_settings"
-                style="@style/buttons_main"/>
+                style="@style/Buttons_main"/>
 
 
         </LinearLayout>

@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        style="@style/settings_screen_template">
+        style="@style/Settings_screen_template">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:padding="48dp"/>
 
             <TextView
-                style="@style/settings_text"
+                style="@style/Settings_text"
                 android:layout_marginStart="@dimen/button_icon_padding"
                 android:text="@string/Settings"
                 android:textSize="@dimen/header_button_text_size"
@@ -44,7 +44,7 @@
             android:paddingHorizontal="@dimen/standard_margin">
 
             <TextView
-                style="@style/settings_text"
+                style="@style/Settings_text"
                 android:text="@string/Dark_theme" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -58,10 +58,10 @@
 
         <FrameLayout
             android:id="@+id/shareApp"
-            style="@style/settings_button_template">
+            style="@style/Settings_button_template">
 
             <TextView
-                style="@style/settings_text"
+                style="@style/Settings_text"
                 android:text="@string/Share_app" />
 
             <ImageView
@@ -73,10 +73,10 @@
 
         <FrameLayout
             android:id="@+id/writeSupport"
-            style="@style/settings_button_template">
+            style="@style/Settings_button_template">
 
             <TextView
-                style="@style/settings_text"
+                style="@style/Settings_text"
                 android:text="@string/Write_to_support" />
 
             <ImageView
@@ -88,10 +88,10 @@
 
         <FrameLayout
             android:id="@+id/userAgreement"
-            style="@style/settings_button_template">
+            style="@style/Settings_button_template">
 
             <TextView
-                style="@style/settings_text"
+                style="@style/Settings_text"
                 android:text="@string/User_Agreement" />
 
             <ImageView
