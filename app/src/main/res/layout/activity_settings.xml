@@ -21,7 +21,7 @@
                 android:layout_width="@dimen/button_icon_size"
                 android:layout_height="@dimen/button_icon_size"
                 android:src="@drawable/ic_arrow_back"
-                app:tint="@color/cl_text"
+                app:tint="@color/black"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
@@ -65,10 +65,9 @@
                 android:text="@string/Share_app" />
 
             <ImageView
-                android:layout_width="@dimen/button_icon_size"
-                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
-                android:src="@drawable/ic_share" />
+                android:src="@drawable/ic_share"
+                style="@style/Settings_icon"/>
         </FrameLayout>
 
         <FrameLayout
@@ -80,10 +79,9 @@
                 android:text="@string/Write_to_support" />
 
             <ImageView
-                android:layout_width="@dimen/button_icon_size"
-                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
-                android:src="@drawable/ic_support" />
+                android:src="@drawable/ic_support"
+                style="@style/Settings_icon"/>
         </FrameLayout>
 
         <FrameLayout
@@ -95,10 +93,9 @@
                 android:text="@string/User_Agreement" />
 
             <ImageView
-                android:layout_width="@dimen/button_icon_size"
-                android:layout_height="@dimen/button_icon_size"
                 android:layout_gravity="center_vertical|end"
-                android:src="@drawable/ic_arrow_forward" />
+                android:src="@drawable/ic_arrow_forward"
+                style="@style/Settings_icon"/>
         </FrameLayout>
 
 
