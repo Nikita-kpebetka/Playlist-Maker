@@ -28,10 +28,9 @@
                 android:scaleType="center"
                 android:padding="48dp"/>
 
-            <TextView
+            <com.google.android.material.appbar.MaterialToolbar
                 style="@style/Settings_text"
-                android:layout_marginStart="@dimen/button_icon_padding"
-                android:text="@string/Settings"
+                app:title="@string/Settings"
                 android:textSize="@dimen/header_button_text_size"
                 android:fontFamily="@font/ys_display_bold"
                 android:textStyle="bold" />
