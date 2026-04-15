@@ -14,6 +14,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
+
+    private val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
+    private lateinit var searchEditText: EditText
+    private lateinit var clearButton: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,8 +30,8 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val backButton = findViewById<ImageView>(R.id.backButton)
-        val searchEditText = findViewById<EditText>(R.id.searchEditText)
-        val clearButton = findViewById<ImageView>(R.id.clearButton)
+        searchEditText = findViewById<EditText>(R.id.searchEditText)
+        clearButton = findViewById<ImageView>(R.id.clearButton)
 
         backButton.setOnClickListener {
             finish()
@@ -53,6 +58,16 @@ class SearchActivity : AppCompatActivity() {
         searchEditText.addTextChangedListener(simpleTextWatcher)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT_KEY, searchEditText.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val savedText = savedInstanceState.getString(SEARCH_TEXT_KEY, "")
+        searchEditText.setText(savedText)
+    }
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE

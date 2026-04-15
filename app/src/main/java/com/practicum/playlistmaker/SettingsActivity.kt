@@ -27,23 +27,19 @@ class SettingsActivity : AppCompatActivity() {
 
         val writeSupportButton = findViewById<FrameLayout>(R.id.writeSupport)
         writeSupportButton.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SENDTO)
-            emailIntent.data = android.net.Uri.parse("mailto:${getString(R.string.My_email)}")
-            emailIntent.putExtra(
-                Intent.EXTRA_SUBJECT,
-                "Сообщение разработчикам и разработчицам приложения Playlist Maker"
-            )
-            emailIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                "Спасибо разработчикам и разработчицам за крутое приложение!"
-            )
+            val emailIntent = Intent(Intent.ACTION_SEND)
+            emailIntent.type = "message/rfc822"
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.My_email)))
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.topic))
+            emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
+
             startActivity(emailIntent)
         }
 
         val userAgreementButton = findViewById<FrameLayout>(R.id.userAgreement)
         userAgreementButton.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW)
-            browserIntent.data = android.net.Uri.parse("https://yandex.ru/legal/practicum_offer/ru/")
+            browserIntent.data = android.net.Uri.parse(getString(R.string.link_to_the_user_agreement_))
             startActivity(browserIntent)
         }
     }

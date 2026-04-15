@@ -9,6 +9,9 @@
     <string name="Settings">Настройки</string>
     <string name="Share_click">https://practicum.yandex.com/android-developer/?from=catalog</string>
     <string name="My_email">kbetkabmope@gmail.com</string>
+    <string name="topic">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="link_to_the_user_agreement_">https://yandex.ru/legal/practicum_offer/ru/</string>
 
 <!--    <string name="..."></string>-->
 </resources>
