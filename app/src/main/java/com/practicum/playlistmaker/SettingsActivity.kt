@@ -3,8 +3,9 @@ package com.practicum.playlistmaker
 import android.content.Intent
 import android.os.Bundle
 import android.widget.FrameLayout
-import android.widget.ImageView
+
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,8 +13,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
 
-        val backButton = findViewById<ImageView>(R.id.backButton)
-        backButton.setOnClickListener {
+        val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
+        toolbar.setNavigationOnClickListener {
             finish()
         }
 

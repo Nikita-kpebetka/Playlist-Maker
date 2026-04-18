@@ -13,32 +13,20 @@
         android:orientation="vertical"
         style="@style/Settings_screen_template">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/standard_margin">
-
-            <ImageView
+            <com.google.android.material.appbar.MaterialToolbar
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
                 android:id="@+id/backButton"
-                android:layout_width="@dimen/button_icon_size"
-                android:layout_height="@dimen/button_icon_size"
-                android:src="@drawable/ic_arrow_back"
+                style="@style/Settings_text"
+                app:navigationIcon="@drawable/ic_arrow_back"
                 app:tint="@color/black"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
                 android:scaleType="center"
-                android:padding="48dp"/>
-
-            <com.google.android.material.appbar.MaterialToolbar
-                style="@style/Settings_text"
-
                 app:title="@string/Search"
                 android:textSize="@dimen/header_button_text_size"
                 android:fontFamily="@font/ys_display_bold"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textStyle="bold"
+                android:gravity="center_vertical"/>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

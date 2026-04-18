@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
 
@@ -29,11 +30,8 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val backButton = findViewById<ImageView>(R.id.backButton)
-        searchEditText = findViewById<EditText>(R.id.searchEditText)
-        clearButton = findViewById<ImageView>(R.id.clearButton)
-
-        backButton.setOnClickListener {
+        val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
+        toolbar.setNavigationOnClickListener {
             finish()
         }
 
