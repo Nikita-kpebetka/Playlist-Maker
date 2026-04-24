@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Buttons_main" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginBottom">@dimen/standard_margin</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/header_button_text_size</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">@dimen/button_radius_main</item>
+        <item name="iconPadding">@dimen/button_icon_padding</item>
+        <item name="iconSize">@dimen/button_icon_size</item>
+        <item name="iconTint">@color/black</item>
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+    </style>
+
+    <style name="Settings_screen_template">
+        <item name="background">@color/white</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Settings_button_template">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/settings_item_height</item>
+        <item name="android:paddingHorizontal">@dimen/standard_margin</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Settings_text">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">start|center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/settings_text_size</item>
+    </style>
+
+    <style name="Settings_icon">
+        <item name="android:layout_width">@dimen/button_icon_size</item>
+        <item name="android:layout_height">@dimen/button_icon_size</item>
+        <item name="tint">@color/cl_icon</item>
+    </style>
+
+<!--    <style name="">-->
+<!--        <item name=""></item>-->
+<!--    </style>-->
+
+</resources>
