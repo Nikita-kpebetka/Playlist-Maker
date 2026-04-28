@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/ivAlbumArt"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvSongTitle"
+        style="@style/Track_name"
+        app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+        app:layout_constraintStart_toEndOf="@+id/ivAlbumArt"
+        app:layout_constraintTop_toTopOf="@+id/ivAlbumArt"
+        tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
+
+    <TextView
+        android:id="@+id/tvSongSubtitle"
+        style="@style/Artist_name"
+        app:layout_constraintEnd_toEndOf="@+id/tvSongTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvSongTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvSongTitle"
+        tools:text="ЕЩЕ один длиннный текст ДЛЯ ПРОВЕРКИ бла бла бла бла бла" />
+
+    <ImageView
+        android:id="@+id/ivChevron"
+        style="@style/Settings_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_forward"
+        android:rotation="0"
+        tools:ignore="ContentDescription" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
