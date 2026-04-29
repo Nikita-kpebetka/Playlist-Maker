@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/ivAlbumArt"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,14 +20,17 @@
     <TextView
         android:id="@+id/tvSongTitle"
         style="@style/Track_name"
+        app:layout_constraintBottom_toTopOf="@+id/tvSongSubtitle"
         app:layout_constraintEnd_toStartOf="@+id/ivChevron"
         app:layout_constraintStart_toEndOf="@+id/ivAlbumArt"
         app:layout_constraintTop_toTopOf="@+id/ivAlbumArt"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
     <TextView
         android:id="@+id/tvSongSubtitle"
         style="@style/Artist_name"
+        app:layout_constraintBottom_toBottomOf="@+id/ivAlbumArt"
         app:layout_constraintEnd_toEndOf="@+id/tvSongTitle"
         app:layout_constraintStart_toStartOf="@+id/tvSongTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvSongTitle"

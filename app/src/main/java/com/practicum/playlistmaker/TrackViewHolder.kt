@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker
 
+import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -21,12 +23,21 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         songTitle.text = track.trackName
         songSubtitle.text = "${track.artistName} • ${track.trackTime}"
 
+        val radiusPx = dpToPx(2f, itemView.context)
+
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.placeholder)
-            .error(R.drawable.placeholder)
-            .transform(CenterCrop(), RoundedCorners(2))
             .centerCrop()
+            .transform(CenterCrop(), RoundedCorners(radiusPx))
             .into(albumArt)
     }
+}
+
+private fun dpToPx(dp: Float, context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        context.resources.displayMetrics
+    ).toInt()
 }
