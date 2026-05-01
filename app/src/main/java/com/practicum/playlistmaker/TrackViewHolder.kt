@@ -25,13 +25,10 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val radiusPx = dpToPx(2f, itemView.context)
 
-        fun bind(track: Track) {
-            songTitle.text = track.trackName
-            songSubtitle.text = "${track.artistName} • ${track.trackTime}"
-
             Glide.with(itemView)
                 .load(track.artworkUrl100)
                 .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .transform(CenterCrop(), RoundedCorners(radiusPx))
                 .into(albumArt)
         }
@@ -44,4 +41,3 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             context.resources.displayMetrics
         ).toInt()
     }
-}
