@@ -25,19 +25,23 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val radiusPx = dpToPx(2f, itemView.context)
 
-        Glide.with(itemView)
-            .load(track.artworkUrl100)
-            .placeholder(R.drawable.placeholder)
-            .centerCrop()
-            .transform(CenterCrop(), RoundedCorners(radiusPx))
-            .into(albumArt)
-    }
-}
+        fun bind(track: Track) {
+            songTitle.text = track.trackName
+            songSubtitle.text = "${track.artistName} • ${track.trackTime}"
 
-private fun dpToPx(dp: Float, context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        context.resources.displayMetrics
-    ).toInt()
+            Glide.with(itemView)
+                .load(track.artworkUrl100)
+                .placeholder(R.drawable.placeholder)
+                .transform(CenterCrop(), RoundedCorners(radiusPx))
+                .into(albumArt)
+        }
+    }
+
+    private fun dpToPx(dp: Float, context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
+    }
 }
