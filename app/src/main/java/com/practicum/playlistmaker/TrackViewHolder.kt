@@ -32,7 +32,6 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
                 .transform(CenterCrop(), RoundedCorners(radiusPx))
                 .into(albumArt)
         }
-    }
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
@@ -41,3 +40,4 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             context.resources.displayMetrics
         ).toInt()
     }
+}
