@@ -40,3 +40,4 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             context.resources.displayMetrics
         ).toInt()
     }
+}
