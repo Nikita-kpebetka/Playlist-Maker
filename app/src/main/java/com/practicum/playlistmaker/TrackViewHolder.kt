@@ -25,13 +25,13 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val radiusPx = dpToPx(2f, itemView.context)
 
-            Glide.with(itemView)
-                .load(track.artworkUrl100)
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder)
-                .transform(CenterCrop(), RoundedCorners(radiusPx))
-                .into(albumArt)
-        }
+        Glide.with(itemView.context)
+            .load(track.artworkUrl100)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.placeholder)
+            .transform(CenterCrop(), RoundedCorners(radiusPx))
+            .into(albumArt)
+    }
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
