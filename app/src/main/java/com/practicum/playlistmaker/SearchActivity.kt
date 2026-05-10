@@ -12,6 +12,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
@@ -31,6 +33,8 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
+        searchEditText = findViewById(R.id.searchEditText)
+        clearButton = findViewById(R.id.clearButton)
         toolbar.setNavigationOnClickListener {
             finish()
         }
@@ -52,8 +56,11 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
-
         searchEditText.addTextChangedListener(simpleTextWatcher)
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = TrackAdapter(trackList)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
