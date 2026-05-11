@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context)
@@ -21,11 +23,11 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
     fun bind(track: Track) {
         songTitle.text = track.trackName
-        songSubtitle.text = "${track.artistName} • ${track.trackTime}"
+        songSubtitle.text = "${track.artistName} • ${track.trackTimeMillis}"
 
         val radiusPx = dpToPx(2f, itemView.context)
 
-        Glide.with(itemView.context)
+        Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
@@ -39,5 +41,8 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             dp,
             context.resources.displayMetrics
         ).toInt()
+    }
+    private fun formatTime(millis: Long): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(millis)
     }
 }
