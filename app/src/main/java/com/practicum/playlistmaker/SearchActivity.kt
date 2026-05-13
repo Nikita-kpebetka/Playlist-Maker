@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -28,8 +29,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearButton: ImageView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeholderEmpty: LinearLayout
-    private lateinit var placeholderError: LinearLayout
+    private lateinit var placeholderError: android.widget.ScrollView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var btnRefresh: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,18 @@ class SearchActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         placeholderEmpty = findViewById(R.id.placeholderEmpty)
         placeholderError = findViewById(R.id.placeholderError)
+        btnRefresh = findViewById(R.id.btnRefresh)
+
+        val simpleTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                clearButton.visibility = clearButtonVisibility(s)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+        searchEditText.addTextChangedListener(simpleTextWatcher)
 
         toolbar.setNavigationOnClickListener {
             finish()
@@ -60,16 +74,12 @@ class SearchActivity : AppCompatActivity() {
             showPlaceholder(View.GONE, View.GONE)
         }
 
-        val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = clearButtonVisibility(s)
+        btnRefresh.setOnClickListener {
+            val query = searchEditText.text.toString().trim()
+            if (query.isNotEmpty()) {
+                performSearch(query)
             }
-
-            override fun afterTextChanged(s: Editable?) {}
         }
-        searchEditText.addTextChangedListener(simpleTextWatcher)
 
         trackAdapter = TrackAdapter(emptyList())
         recyclerView.layoutManager = LinearLayoutManager(this)
