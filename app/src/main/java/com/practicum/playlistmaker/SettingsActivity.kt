@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,6 +17,17 @@ class SettingsActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
         toolbar.setNavigationOnClickListener {
             finish()
+        }
+
+        val themeSwitch = findViewById<SwitchMaterial>(R.id.themeSwitch)
+        val sharedPrefs = getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
+
+        themeSwitch.isChecked = sharedPrefs.getBoolean("DARK_THEME_KEY", false)
+
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedPrefs.edit().putBoolean("DARK_THEME_KEY", isChecked).apply()
+
+            (applicationContext as App).switchTheme(isChecked)
         }
 
         val shareAppButton = findViewById<FrameLayout>(R.id.shareApp)
