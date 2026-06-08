@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -66,6 +67,7 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             searchHistory.addTrack(track)
+            openAudioPlayer(track)
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter
@@ -73,6 +75,7 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter = TrackAdapter(emptyList()) { track ->
             searchHistory.addTrack(track)
             historyAdapter.updateTracks(searchHistory.getHistory())
+            openAudioPlayer(track)
         }
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyRecyclerView.adapter = historyAdapter
@@ -215,5 +218,12 @@ class SearchActivity : AppCompatActivity() {
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun openAudioPlayer(track: Track) {
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        val trackJson = com.google.gson.Gson().toJson(track)
+        intent.putExtra("TRACK_DATA_KEY", trackJson)
+        startActivity(intent)
     }
 }
