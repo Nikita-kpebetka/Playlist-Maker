@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:drawableStart="@drawable/ic_magnifier"
+                android:drawableStart="@drawable/ic_search_string"
                 android:drawablePadding="8dp"
                 android:hint="@string/Search"
                 android:imeOptions="actionDone"

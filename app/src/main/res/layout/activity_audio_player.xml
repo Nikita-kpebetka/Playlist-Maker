@@ -62,7 +62,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvTrackName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
+            tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ "/>
 
         <ImageView
             android:id="@+id/btnAddToPlaylist"
@@ -70,7 +70,6 @@
             android:layout_height="51dp"
             android:layout_marginStart="24dp"
             android:src="@drawable/ic_add_to_playlist1"
-            app:tint="@color/black"
             app:layout_constraintTop_toTopOf="@id/btnPlay"
             app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintStart_toStartOf="parent" />
@@ -92,7 +91,6 @@
             android:layout_height="51dp"
             android:layout_marginEnd="24dp"
             android:src="@drawable/ic_favorite1"
-            app:tint="@color/black"
             app:layout_constraintTop_toTopOf="@id/btnPlay"
             app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -108,12 +106,13 @@
             app:layout_constraintTop_toBottomOf="@id/btnPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:text="00:00"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
         <TextView
             android:id="@+id/lblTrackTimeTitle"
             style="@style/Label_title"
-            android:text="Длительность"
+            android:text="@string/Duration"
             android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@id/tvPlayTime"
             app:layout_constraintStart_toStartOf="parent" />
@@ -128,7 +127,7 @@
         <TextView
             android:id="@+id/lblCollectionTitle"
             style="@style/Label_title"
-            android:text="Альбом"
+            android:text="@string/Album"
             app:layout_constraintTop_toBottomOf="@id/lblTrackTimeTitle"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -142,7 +141,7 @@
         <TextView
             android:id="@+id/lblReleaseDateTitle"
             style="@style/Label_title"
-            android:text="Год"
+            android:text="@string/Year"
             app:layout_constraintTop_toBottomOf="@id/lblCollectionTitle"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -156,7 +155,7 @@
         <TextView
             android:id="@+id/lblGenreTitle"
             style="@style/Label_title"
-            android:text="Жанр"
+            android:text="@string/Genre"
             app:layout_constraintTop_toBottomOf="@id/lblReleaseDateTitle"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -170,7 +169,7 @@
         <TextView
             android:id="@+id/lblCountryTitle"
             style="@style/Label_title"
-            android:text="Страна"
+            android:text="@string/Country"
             app:layout_constraintTop_toBottomOf="@id/lblGenreTitle"
             app:layout_constraintStart_toStartOf="parent" />
 
