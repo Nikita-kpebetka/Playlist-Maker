@@ -43,7 +43,7 @@
     </style>
 
     <style name="Settings_screen_template">
-        <item name="background">@color/white</item>
+        <item name="android:background">@color/white</item>
         <item name="android:orientation">vertical</item>
     </style>
 
