@@ -44,7 +44,6 @@
             android:layout_marginTop="24dp"
             android:fontFamily="@font/ys_display_medium"
             android:textSize="22sp"
-            android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@id/ivAlbumCover"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,7 +57,6 @@
             android:layout_marginTop="12dp"
             android:fontFamily="@font/ys_display_regular"
             android:textSize="14sp"
-            android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@id/tvTrackName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +100,6 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/ys_display_medium"
             android:textSize="14sp"
-            android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@id/btnPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -120,8 +117,11 @@
         <TextView
             android:id="@+id/tvTrackTimeValue"
             style="@style/Label_value"
+            android:gravity="end"
+            android:layout_marginStart="16dp"
             app:layout_constraintBaseline_toBaselineOf="@id/lblTrackTimeTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblTrackTimeTitle"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
         <TextView
@@ -134,8 +134,11 @@
         <TextView
             android:id="@+id/tvCollectionValue"
             style="@style/Label_value"
+            android:gravity="end"
+            android:layout_marginStart="45dp"
             app:layout_constraintBaseline_toBaselineOf="@id/lblCollectionTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lblCollectionTitle"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
         <TextView
@@ -150,6 +153,7 @@
             style="@style/Label_value"
             app:layout_constraintBaseline_toBaselineOf="@id/lblReleaseDateTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lblReleaseDateTitle"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
         <TextView
@@ -162,8 +166,10 @@
         <TextView
             android:id="@+id/tvGenreValue"
             style="@style/Label_value"
+            android:layout_marginStart="16dp"
             app:layout_constraintBaseline_toBaselineOf="@id/lblGenreTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lblGenreTitle"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
         <TextView
@@ -178,6 +184,7 @@
             style="@style/Label_value"
             app:layout_constraintBaseline_toBaselineOf="@id/lblCountryTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lblCountryTitle"
             tools:text="ПРООООООстоооооо_ОЧень_Длинный текст, для ПРОВЕРКИ " />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
