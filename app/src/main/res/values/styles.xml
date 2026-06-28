@@ -99,6 +99,14 @@
         <item name="android:background">@color/white</item>
     </style>
 
+    <style name="SearchProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">140dp</item>
+        <item name="android:indeterminateTint">@color/progressBar</item>
+    </style>
+
 
 <!--    <style name="">-->
 <!--        <item name=""></item>-->
