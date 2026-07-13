@@ -1,7 +1,10 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
@@ -21,6 +24,31 @@ import java.util.TimeZone
 
 class AudioPlayerActivity : AppCompatActivity() {
 
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val TIMER_UPDATE_DELAY = 300L
+    }
+
+    private var playerState = STATE_DEFAULT
+    private var mediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
+
+    private lateinit var btnPlay: ImageView
+    private lateinit var tvPlayTime: TextView
+    private var previewUrl: String? = null
+
+    private val updateTimerRunnable = object : Runnable {
+        override fun run() {
+            if (playerState == STATE_PLAYING) {
+                tvPlayTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                handler.postDelayed(this, TIMER_UPDATE_DELAY)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,14 +61,43 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
-        toolbar.setNavigationOnClickListener { finish() }
+        toolbar.setNavigationOnClickListener {
+            stopAndReleasePlayer()
+            finish()
+        }
+
+        btnPlay = findViewById(R.id.btnPlay)
+        tvPlayTime = findViewById(R.id.tvPlayTime)
+
+        btnPlay.isEnabled = false
 
         val trackJson = intent.getStringExtra("TRACK_DATA_KEY")
-
         if (!trackJson.isNullOrEmpty()) {
             val track = Gson().fromJson(trackJson, Track::class.java)
+            previewUrl = track.previewUrl
             bindTrackInfo(track)
+            preparePlayer()
         }
+
+        btnPlay.setOnClickListener {
+            playbackControl()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopAndReleasePlayer()
+    }
+
+    private fun stopAndReleasePlayer() {
+        handler.removeCallbacks(updateTimerRunnable)
+        mediaPlayer.stop()
+        mediaPlayer.release()
     }
 
     private fun bindTrackInfo(track: Track) {
@@ -48,13 +105,10 @@ class AudioPlayerActivity : AppCompatActivity() {
         val tvTrackName = findViewById<TextView>(R.id.tvTrackName)
         val tvArtistName = findViewById<TextView>(R.id.tvArtistName)
         val tvTrackTimeValue = findViewById<TextView>(R.id.tvTrackTimeValue)
-
         val lblCollectionTitle = findViewById<TextView>(R.id.lblCollectionTitle)
         val tvCollectionValue = findViewById<TextView>(R.id.tvCollectionValue)
-
         val lblReleaseDateTitle = findViewById<TextView>(R.id.lblReleaseDateTitle)
         val tvReleaseDateValue = findViewById<TextView>(R.id.tvReleaseDateValue)
-
         val tvGenreValue = findViewById<TextView>(R.id.tvGenreValue)
         val tvCountryValue = findViewById<TextView>(R.id.tvCountryValue)
 
@@ -83,13 +137,50 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
 
         val radiusPx = dpToPx(8f, this)
-
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.vector)
             .error(R.drawable.vector)
             .transform(CenterCrop(), RoundedCorners(radiusPx))
             .into(ivAlbumCover)
+    }
+    private fun preparePlayer() {
+        if (previewUrl.isNullOrEmpty()) return
+        mediaPlayer.setDataSource(previewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            btnPlay.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            handler.removeCallbacks(updateTimerRunnable)
+            playerState = STATE_PREPARED
+            btnPlay.setImageResource(R.drawable.ic_play)
+            tvPlayTime.text = "00:00"
+        }
+    }
+
+    private fun playbackControl() {
+        when (playerState) {
+            STATE_PLAYING -> pausePlayer()
+            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        btnPlay.setImageResource(R.drawable.ic_pause)
+        playerState = STATE_PLAYING
+        handler.post(updateTimerRunnable)
+    }
+
+    private fun pausePlayer() {
+        if (playerState == STATE_PLAYING) {
+            mediaPlayer.pause()
+            btnPlay.setImageResource(R.drawable.ic_play)
+            playerState = STATE_PAUSED
+            handler.removeCallbacks(updateTimerRunnable)
+        }
     }
 
     private fun formatTime(millis: Long): String {
