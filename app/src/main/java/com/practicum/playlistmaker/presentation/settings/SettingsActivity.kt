@@ -1,12 +1,14 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.settings
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
-
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.presentation.App
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +54,7 @@ class SettingsActivity : AppCompatActivity() {
         val userAgreementButton = findViewById<FrameLayout>(R.id.userAgreement)
         userAgreementButton.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW)
-            browserIntent.data = android.net.Uri.parse(getString(R.string.link_to_the_user_agreement_))
+            browserIntent.data = Uri.parse(getString(R.string.link_to_the_user_agreement_))
             startActivity(browserIntent)
         }
     }

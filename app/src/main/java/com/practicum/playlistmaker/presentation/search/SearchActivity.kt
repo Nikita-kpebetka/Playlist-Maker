@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -13,18 +13,20 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.presentation.player.AudioPlayerActivity
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.impl.TracksInteractor
+import com.practicum.playlistmaker.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
 
@@ -44,8 +46,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var btnClearHistory: Button
     private lateinit var progressBar: ProgressBar
+
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
+
+    private val tracksInteractor: TracksInteractor = Creator.provideTracksInteractor()
     private lateinit var searchHistory: SearchHistory
 
     private val handler = Handler(Looper.getMainLooper())
@@ -207,30 +212,23 @@ class SearchActivity : AppCompatActivity() {
         showPlaceholder(View.GONE, View.GONE)
         progressBar.visibility = View.VISIBLE
 
-        RetrofitClient.api.search(query).enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                progressBar.visibility = View.GONE
+        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: List<Track>?, hasError: Boolean) {
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
 
-                if (response.isSuccessful) {
-                    val tracks = response.body()?.results ?: emptyList()
-                    if (tracks.isEmpty()) {
+                    if (hasError) {
+                        showPlaceholder(View.GONE, View.VISIBLE)
+                        trackAdapter.updateTracks(emptyList())
+                    } else if (foundTracks.isNullOrEmpty()) {
                         showPlaceholder(View.VISIBLE, View.GONE)
                         trackAdapter.updateTracks(emptyList())
                     } else {
                         showPlaceholder(View.GONE, View.GONE)
-                        trackAdapter.updateTracks(tracks)
+                        trackAdapter.updateTracks(foundTracks)
                         recyclerView.visibility = View.VISIBLE
                     }
-                } else {
-                    showPlaceholder(View.GONE, View.VISIBLE)
-                    trackAdapter.updateTracks(emptyList())
                 }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
-                showPlaceholder(View.GONE, View.VISIBLE)
-                trackAdapter.updateTracks(emptyList())
             }
         })
     }
