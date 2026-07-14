@@ -4,10 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.di.Creator
 import com.practicum.playlistmaker.presentation.App
 
 class SettingsActivity : AppCompatActivity() {
@@ -15,19 +17,19 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
         toolbar.setNavigationOnClickListener {
             finish()
         }
 
         val themeSwitch = findViewById<SwitchMaterial>(R.id.themeSwitch)
-        val sharedPrefs = getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
 
-        themeSwitch.isChecked = sharedPrefs.getBoolean("DARK_THEME_KEY", false)
+        val settingsInteractor = Creator.provideSettingsInteractor(this)
+
+        themeSwitch.isChecked = settingsInteractor.isDarkThemeEnabled()
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedPrefs.edit().putBoolean("DARK_THEME_KEY", isChecked).apply()
+            settingsInteractor.saveThemeSettings(isChecked)
 
             (applicationContext as App).switchTheme(isChecked)
         }
@@ -42,19 +44,22 @@ class SettingsActivity : AppCompatActivity() {
 
         val writeSupportButton = findViewById<FrameLayout>(R.id.writeSupport)
         writeSupportButton.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SEND)
-            emailIntent.type = "message/rfc822"
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.My_email)))
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.topic))
-            emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
-
-            startActivity(emailIntent)
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = android.net.Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.My_email)))
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.topic))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
+            }
+            try {
+                startActivity(emailIntent)
+            } catch (e: Exception) {
+            }
         }
 
         val userAgreementButton = findViewById<FrameLayout>(R.id.userAgreement)
         userAgreementButton.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW)
-            browserIntent.data = Uri.parse(getString(R.string.link_to_the_user_agreement_))
+            browserIntent.data = android.net.Uri.parse(getString(R.string.link_to_the_user_agreement_))
             startActivity(browserIntent)
         }
     }

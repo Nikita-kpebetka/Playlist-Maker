@@ -22,19 +22,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.di.Creator
 import com.practicum.playlistmaker.presentation.player.AudioPlayerActivity
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.repository.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.domain.impl.TracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
-
-    companion object {
-        private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
@@ -51,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyAdapter: TrackAdapter
 
     private val tracksInteractor: TracksInteractor = Creator.provideTracksInteractor()
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchHistoryInteractor: SearchHistoryInteractor
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -74,8 +70,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val sharedPreferences = getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPreferences)
+        searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
         searchEditText = findViewById(R.id.searchEditText)
@@ -91,7 +86,7 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             if (clickDebounce()) {
-                searchHistory.addTrack(track)
+                searchHistoryInteractor.addTrack(track)
                 openAudioPlayer(track)
             }
         }
@@ -100,8 +95,8 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter = TrackAdapter(emptyList()) { track ->
             if (clickDebounce()) {
-                searchHistory.addTrack(track)
-                historyAdapter.updateTracks(searchHistory.getHistory())
+                searchHistoryInteractor.addTrack(track)
+                historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
                 openAudioPlayer(track)
             }
         }
@@ -109,7 +104,7 @@ class SearchActivity : AppCompatActivity() {
         historyRecyclerView.adapter = historyAdapter
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) {
+            if (hasFocus && searchEditText.text.isEmpty() && searchHistoryInteractor.getHistory().isNotEmpty()) {
                 showHistoryList()
             } else {
                 historyContainer.visibility = View.GONE
@@ -128,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
                     showPlaceholder(View.GONE, View.GONE)
                     progressBar.visibility = View.GONE
 
-                    if (searchEditText.hasFocus() && searchHistory.getHistory().isNotEmpty()) {
+                    if (searchEditText.hasFocus() && searchHistoryInteractor.getHistory().isNotEmpty()) {
                         showHistoryList()
                     } else {
                         historyContainer.visibility = View.GONE
@@ -150,7 +145,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         btnClearHistory.setOnClickListener {
-            searchHistory.clearHistory()
+            searchHistoryInteractor.clearHistory()
             historyContainer.visibility = View.GONE
         }
 
@@ -202,7 +197,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        historyAdapter.updateTracks(searchHistory.getHistory())
+        historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
         historyContainer.visibility = View.VISIBLE
     }
 
@@ -258,5 +253,11 @@ class SearchActivity : AppCompatActivity() {
         val trackJson = com.google.gson.Gson().toJson(track)
         intent.putExtra("TRACK_DATA_KEY", trackJson)
         startActivity(intent)
+    }
+
+    companion object {
+        private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
