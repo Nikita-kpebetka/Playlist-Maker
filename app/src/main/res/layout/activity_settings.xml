@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/Settings_screen_template"
-    tools:context=".presentation.search.SearchActivity">
+    tools:context=".presentation.search.ui.SearchActivity">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/backButton"
