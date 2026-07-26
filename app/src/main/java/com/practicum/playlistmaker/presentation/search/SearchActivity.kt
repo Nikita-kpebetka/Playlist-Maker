@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -13,26 +13,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.practicum.playlistmaker.di.Creator
+import com.practicum.playlistmaker.presentation.player.AudioPlayerActivity
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.repository.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.domain.impl.TracksInteractor
+import com.practicum.playlistmaker.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
-
-    companion object {
-        private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
@@ -44,9 +42,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var btnClearHistory: Button
     private lateinit var progressBar: ProgressBar
+
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
-    private lateinit var searchHistory: SearchHistory
+
+    private val tracksInteractor: TracksInteractor = Creator.provideTracksInteractor()
+    private lateinit var searchHistoryInteractor: SearchHistoryInteractor
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -69,8 +70,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val sharedPreferences = getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPreferences)
+        searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.backButton)
         searchEditText = findViewById(R.id.searchEditText)
@@ -86,7 +86,7 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             if (clickDebounce()) {
-                searchHistory.addTrack(track)
+                searchHistoryInteractor.addTrack(track)
                 openAudioPlayer(track)
             }
         }
@@ -95,8 +95,8 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter = TrackAdapter(emptyList()) { track ->
             if (clickDebounce()) {
-                searchHistory.addTrack(track)
-                historyAdapter.updateTracks(searchHistory.getHistory())
+                searchHistoryInteractor.addTrack(track)
+                historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
                 openAudioPlayer(track)
             }
         }
@@ -104,7 +104,7 @@ class SearchActivity : AppCompatActivity() {
         historyRecyclerView.adapter = historyAdapter
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) {
+            if (hasFocus && searchEditText.text.isEmpty() && searchHistoryInteractor.getHistory().isNotEmpty()) {
                 showHistoryList()
             } else {
                 historyContainer.visibility = View.GONE
@@ -123,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
                     showPlaceholder(View.GONE, View.GONE)
                     progressBar.visibility = View.GONE
 
-                    if (searchEditText.hasFocus() && searchHistory.getHistory().isNotEmpty()) {
+                    if (searchEditText.hasFocus() && searchHistoryInteractor.getHistory().isNotEmpty()) {
                         showHistoryList()
                     } else {
                         historyContainer.visibility = View.GONE
@@ -145,7 +145,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         btnClearHistory.setOnClickListener {
-            searchHistory.clearHistory()
+            searchHistoryInteractor.clearHistory()
             historyContainer.visibility = View.GONE
         }
 
@@ -197,7 +197,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        historyAdapter.updateTracks(searchHistory.getHistory())
+        historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
         historyContainer.visibility = View.VISIBLE
     }
 
@@ -207,30 +207,23 @@ class SearchActivity : AppCompatActivity() {
         showPlaceholder(View.GONE, View.GONE)
         progressBar.visibility = View.VISIBLE
 
-        RetrofitClient.api.search(query).enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                progressBar.visibility = View.GONE
+        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: List<Track>?, hasError: Boolean) {
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
 
-                if (response.isSuccessful) {
-                    val tracks = response.body()?.results ?: emptyList()
-                    if (tracks.isEmpty()) {
+                    if (hasError) {
+                        showPlaceholder(View.GONE, View.VISIBLE)
+                        trackAdapter.updateTracks(emptyList())
+                    } else if (foundTracks.isNullOrEmpty()) {
                         showPlaceholder(View.VISIBLE, View.GONE)
                         trackAdapter.updateTracks(emptyList())
                     } else {
                         showPlaceholder(View.GONE, View.GONE)
-                        trackAdapter.updateTracks(tracks)
+                        trackAdapter.updateTracks(foundTracks)
                         recyclerView.visibility = View.VISIBLE
                     }
-                } else {
-                    showPlaceholder(View.GONE, View.VISIBLE)
-                    trackAdapter.updateTracks(emptyList())
                 }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
-                showPlaceholder(View.GONE, View.VISIBLE)
-                trackAdapter.updateTracks(emptyList())
             }
         })
     }
@@ -260,5 +253,11 @@ class SearchActivity : AppCompatActivity() {
         val trackJson = com.google.gson.Gson().toJson(track)
         intent.putExtra("TRACK_DATA_KEY", trackJson)
         startActivity(intent)
+    }
+
+    companion object {
+        private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
