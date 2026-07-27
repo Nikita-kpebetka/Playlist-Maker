@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,26 +28,12 @@ import java.util.TimeZone
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private var playerState = STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
-    private val handler = Handler(Looper.getMainLooper())
-
-    private var previewUrl: String? = null
-
     private lateinit var binding: ActivityAudioPlayerBinding
+    private val viewModel: PlayerViewModel by viewModels()
 
     private val trackTimeFormatter by lazy {
         SimpleDateFormat("mm:ss", Locale.getDefault()).apply {
             timeZone = TimeZone.getTimeZone("UTC")
-        }
-    }
-
-    private val updateTimerRunnable = object : Runnable {
-        override fun run() {
-            if (playerState == STATE_PLAYING) {
-                binding.tvPlayTime.text = trackTimeFormatter.format(mediaPlayer.currentPosition)
-                handler.postDelayed(this, TIMER_UPDATE_DELAY)
-            }
         }
     }
 
@@ -64,7 +51,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
 
         binding.backButton.setNavigationOnClickListener {
-            stopAndReleasePlayer()
             finish()
         }
 
@@ -73,29 +59,40 @@ class AudioPlayerActivity : AppCompatActivity() {
         val trackJson = intent.getStringExtra("TRACK_DATA_KEY")
         if (!trackJson.isNullOrEmpty()) {
             val track = Gson().fromJson(trackJson, Track::class.java)
-            previewUrl = track.previewUrl
             bindTrackInfo(track)
-            preparePlayer()
+            viewModel.preparePlayer(track.previewUrl)
+        }
+
+        viewModel.playerScreenState.observe(this) { state ->
+            render(state)
         }
 
         binding.btnPlay.setOnClickListener {
-            playbackControl()
+            viewModel.playbackControl()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopAndReleasePlayer()
-    }
-
-    private fun stopAndReleasePlayer() {
-        handler.removeCallbacks(updateTimerRunnable)
-        mediaPlayer.release()
+    private fun render(state: PlayerScreenState) {
+        when (state) {
+            is PlayerScreenState.Prepared -> {
+                binding.btnPlay.isEnabled = true
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
+                binding.tvPlayTime.text = "00:00"
+            }
+            is PlayerScreenState.Playing -> {
+                binding.btnPlay.setImageResource(R.drawable.ic_pause)
+                binding.tvPlayTime.text = state.currentPosition
+            }
+            is PlayerScreenState.Paused -> {
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
+                binding.tvPlayTime.text = state.currentPosition
+            }
+        }
     }
 
     private fun bindTrackInfo(track: Track) {
@@ -132,59 +129,11 @@ class AudioPlayerActivity : AppCompatActivity() {
             .into(binding.ivAlbumCover)
     }
 
-    private fun preparePlayer() {
-        if (previewUrl.isNullOrEmpty()) return
-        mediaPlayer.reset()
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            binding.btnPlay.isEnabled = true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            handler.removeCallbacks(updateTimerRunnable)
-            playerState = STATE_PREPARED
-            binding.btnPlay.setImageResource(R.drawable.ic_play)
-            binding.tvPlayTime.text = "00:00"
-        }
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
-        }
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        binding.btnPlay.setImageResource(R.drawable.ic_pause)
-        playerState = STATE_PLAYING
-        handler.post(updateTimerRunnable)
-    }
-
-    private fun pausePlayer() {
-        if (playerState == STATE_PLAYING) {
-            mediaPlayer.pause()
-            binding.btnPlay.setImageResource(R.drawable.ic_play)
-            playerState = STATE_PAUSED
-            handler.removeCallbacks(updateTimerRunnable)
-        }
-    }
-
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
             context.resources.displayMetrics
         ).toInt()
-    }
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val TIMER_UPDATE_DELAY = 300L
     }
 }

@@ -61,4 +61,11 @@ dependencies {
     // Gson
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.google.code.gson:gson:2.11.0")
+
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
+
+    // ViewModel
+    implementation("androidx.activity:activity-ktx:1.9.0")
 }

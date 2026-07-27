@@ -17,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -39,18 +40,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
-    private val tracksInteractor: TracksInteractor = Creator.provideTracksInteractor()
-    private lateinit var searchHistoryInteractor: SearchHistoryInteractor
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val searchRunnable = Runnable {
-        val query = binding.searchEditText.text.toString().trim()
-        if (query.isNotEmpty()) {
-            performSearch(query)
-        }
-    }
-    private var isClickAllowed = true
+    private val viewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +55,9 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
-
         trackAdapter = TrackAdapter(emptyList()) { track ->
-            if (clickDebounce()) {
-                searchHistoryInteractor.addTrack(track)
+            if (viewModel.clickDebounce()) {
+                viewModel.addTrackToHistory(track)
                 openAudioPlayer(track)
             }
         }
@@ -77,20 +65,21 @@ class SearchActivity : AppCompatActivity() {
         binding.recyclerView.adapter = trackAdapter
 
         historyAdapter = TrackAdapter(emptyList()) { track ->
-            if (clickDebounce()) {
-                searchHistoryInteractor.addTrack(track)
-                historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
+            if (viewModel.clickDebounce()) {
+                viewModel.addTrackToHistory(track)
                 openAudioPlayer(track)
             }
         }
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.historyRecyclerView.adapter = historyAdapter
 
+        viewModel.screenState.observe(this) { state ->
+            render(state)
+        }
+
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && binding.searchEditText.text.isEmpty() && searchHistoryInteractor.getHistory().isNotEmpty()) {
-                showHistoryList()
-            } else {
-                binding.historyContainer.visibility = View.GONE
+            if (hasFocus && binding.searchEditText.text.isEmpty()) {
+                viewModel.clearSearch()
             }
         }
 
@@ -101,19 +90,10 @@ class SearchActivity : AppCompatActivity() {
                 binding.clearButton.visibility = clearButtonVisibility(s)
 
                 if (s.isNullOrEmpty()) {
-                    handler.removeCallbacks(searchRunnable)
-                    trackAdapter.updateTracks(emptyList())
-                    showPlaceholder(View.GONE, View.GONE)
-                    binding.progressBar.visibility = View.GONE
-
-                    if (binding.searchEditText.hasFocus() && searchHistoryInteractor.getHistory().isNotEmpty()) {
-                        showHistoryList()
-                    } else {
-                        binding.historyContainer.visibility = View.GONE
-                    }
+                    viewModel.clearSearch()
                 } else {
                     binding.historyContainer.visibility = View.GONE
-                    searchDebounce()
+                    viewModel.searchDebounce(s.toString())
                 }
             }
 
@@ -128,15 +108,11 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.btnClearHistory.setOnClickListener {
-            searchHistoryInteractor.clearHistory()
-            binding.historyContainer.visibility = View.GONE
+            viewModel.clearHistory()
         }
 
         binding.btnRefresh.setOnClickListener {
-            val query = binding.searchEditText.text.toString().trim()
-            if (query.isNotEmpty()) {
-                performSearch(query)
-            }
+            viewModel.refreshSearch()
         }
 
         binding.backButton.setNavigationOnClickListener {
@@ -145,70 +121,68 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                handler.removeCallbacks(searchRunnable)
-                val query = binding.searchEditText.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    performSearch(query)
-                }
+                viewModel.refreshSearch()
                 true
             }
             false
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(searchRunnable)
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+    private fun render(state: SearchScreenState) {
+        when (state) {
+            is SearchScreenState.Loading -> showLoading()
+            is SearchScreenState.Success -> showSuccess(state.tracks)
+            is SearchScreenState.History -> showHistory(state.tracks)
+            is SearchScreenState.Error -> showError()
+            is SearchScreenState.NotFound -> showNotFound()
+            is SearchScreenState.Empty -> showEmpty()
         }
-        return current
     }
 
-    private fun showHistoryList() {
-        showPlaceholder(View.GONE, View.GONE)
-        binding.recyclerView.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
-
-        historyAdapter.updateTracks(searchHistoryInteractor.getHistory())
-        binding.historyContainer.visibility = View.VISIBLE
-    }
-
-    private fun performSearch(query: String) {
+    private fun showLoading() {
         binding.historyContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
         showPlaceholder(View.GONE, View.GONE)
         binding.progressBar.visibility = View.VISIBLE
+    }
 
-        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
-            override fun consume(foundTracks: List<Track>?, hasError: Boolean) {
-                runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
+    private fun showSuccess(tracks: List<Track>) {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        showPlaceholder(View.GONE, View.GONE)
+        trackAdapter.updateTracks(tracks)
+        binding.recyclerView.visibility = View.VISIBLE
+    }
 
-                    if (hasError) {
-                        showPlaceholder(View.GONE, View.VISIBLE)
-                        trackAdapter.updateTracks(emptyList())
-                    } else if (foundTracks.isNullOrEmpty()) {
-                        showPlaceholder(View.VISIBLE, View.GONE)
-                        trackAdapter.updateTracks(emptyList())
-                    } else {
-                        showPlaceholder(View.GONE, View.GONE)
-                        trackAdapter.updateTracks(foundTracks)
-                        binding.recyclerView.visibility = View.VISIBLE
-                    }
-                }
-            }
-        })
+    private fun showHistory(tracks: List<Track>) {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        showPlaceholder(View.GONE, View.GONE)
+        historyAdapter.updateTracks(tracks)
+        binding.historyContainer.visibility = View.VISIBLE
+    }
+
+    private fun showError() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        trackAdapter.updateTracks(emptyList())
+        showPlaceholder(View.GONE, View.VISIBLE)
+    }
+
+    private fun showNotFound() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        trackAdapter.updateTracks(emptyList())
+        showPlaceholder(View.VISIBLE, View.GONE)
+    }
+
+    private fun showEmpty() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        showPlaceholder(View.GONE, View.GONE)
     }
 
     private fun showPlaceholder(emptyVisibility: Int, errorVisibility: Int) {
@@ -240,7 +214,5 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
