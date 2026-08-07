@@ -1,0 +1,53 @@
+package com.practicum.playlistmaker.search.ui
+
+import android.content.Context
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.search.domain.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
+
+class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    LayoutInflater.from(parent.context)
+        .inflate(R.layout.recycler_view_item, parent, false)
+) {
+    val albumArt: ImageView = itemView.findViewById(R.id.ivAlbumArt)
+    val songTitle: TextView = itemView.findViewById(R.id.tvSongTitle)
+    val songSubtitle: TextView = itemView.findViewById(R.id.tvSongSubtitle)
+
+    fun bind(track: Track) {
+        songTitle.text = track.trackName
+        songSubtitle.text = "${track.artistName} • ${formatTime(track.trackTimeMillis)}"
+
+        val radiusPx = dpToPx(2f, itemView.context)
+
+        Glide.with(itemView)
+            .load(track.artworkUrl100)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.placeholder)
+            .transform(CenterCrop(), RoundedCorners(radiusPx))
+            .into(albumArt)
+    }
+
+    private fun dpToPx(dp: Float, context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
+    }
+    private fun formatTime(millis: Long): String {
+        val formatter = SimpleDateFormat("mm:ss", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        return formatter.format(millis)
+    }
+}
