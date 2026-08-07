@@ -22,6 +22,7 @@ import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.practicum.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -29,7 +30,7 @@ import java.util.TimeZone
 class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioPlayerBinding
-    private val viewModel: PlayerViewModel by viewModels()
+    private val viewModel: PlayerViewModel by viewModel()
 
     private val trackTimeFormatter by lazy {
         SimpleDateFormat("mm:ss", Locale.getDefault()).apply {
@@ -56,7 +57,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         binding.btnPlay.isEnabled = false
 
-        val trackJson = intent.getStringExtra("TRACK_DATA_KEY")
+        val trackJson = intent.getStringExtra(TRACK_DATA_KEY)
         if (!trackJson.isNullOrEmpty()) {
             val track = Gson().fromJson(trackJson, Track::class.java)
             bindTrackInfo(track)
@@ -135,5 +136,9 @@ class AudioPlayerActivity : AppCompatActivity() {
             dp,
             context.resources.displayMetrics
         ).toInt()
+    }
+
+    companion object {
+        const val TRACK_DATA_KEY = "TRACK_DATA_KEY"
     }
 }
