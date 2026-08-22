@@ -7,11 +7,12 @@ import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class PlayerViewModel(application: Application) : AndroidViewModel(application) {
+class PlayerViewModel : ViewModel() {
 
     private var mediaPlayer = MediaPlayer()
     private val handler = Handler(Looper.getMainLooper())
