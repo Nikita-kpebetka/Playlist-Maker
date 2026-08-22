@@ -39,10 +39,10 @@ val dataModule = module {
     }
 
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(this.get())
+        SearchHistoryRepositoryImpl(get())
     }
 
     single<SettingsRepository> {
-        SettingsRepositoryImpl(this.get())
+        SettingsRepositoryImpl(get())
     }
 }

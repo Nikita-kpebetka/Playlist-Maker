@@ -8,7 +8,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    viewModel { SearchViewModel(this.get(), this.get()) }
-    viewModel { PlayerViewModel(this.get()) }
-    viewModel { SettingsViewModel(this.androidApplication(), this.get(), this.get()) }
+    viewModel { SearchViewModel(get(), get()) }
+    viewModel { PlayerViewModel() }
+    viewModel { SettingsViewModel(androidApplication(), get(), get()) }
 }

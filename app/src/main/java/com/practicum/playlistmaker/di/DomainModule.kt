@@ -11,8 +11,8 @@ import com.practicum.playlistmaker.sharing.impl.SharingInteractorImpl
 import org.koin.dsl.module
 
 val domainModule = module {
-    factory<TracksInteractor> { TracksInteractorImpl(this.get()) }
-    factory<SearchHistoryInteractor> { SearchHistoryInteractorImpl(this.get()) }
-    factory<SettingsInteractor> { SettingsInteractorImpl(this.get()) }
-    factory<SharingInteractor> { SharingInteractorImpl(this.get()) }
+    factory<TracksInteractor> { TracksInteractorImpl(get()) }
+    factory<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
+    factory<SettingsInteractor> { SettingsInteractorImpl(get()) }
+    factory<SharingInteractor> { SharingInteractorImpl(get()) }
 }
