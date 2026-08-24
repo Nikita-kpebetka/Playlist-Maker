@@ -15,7 +15,7 @@
             android:layout_height="56dp"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="@color/black"
-            app:title="@string/Settings"
+            app:title="@string/settings"
             app:titleTextAppearance="@style/Toolbar_title" />
 
         <FrameLayout
@@ -26,7 +26,7 @@
 
             <TextView
                 style="@style/Settings_text"
-                android:text="@string/Dark_theme" />
+                android:text="@string/dark_theme" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/themeSwitch"
@@ -43,7 +43,7 @@
 
             <TextView
                 style="@style/Settings_text"
-                android:text="@string/Share_app" />
+                android:text="@string/share_app" />
 
             <ImageView
                 android:layout_gravity="center_vertical|end"
@@ -57,7 +57,7 @@
 
             <TextView
                 style="@style/Settings_text"
-                android:text="@string/Write_to_support" />
+                android:text="@string/write_to_support" />
 
             <ImageView
                 android:layout_gravity="center_vertical|end"
@@ -71,7 +71,7 @@
 
             <TextView
                 style="@style/Settings_text"
-                android:text="@string/User_Agreement" />
+                android:text="@string/user_Agreement" />
 
             <ImageView
                 style="@style/Settings_icon"

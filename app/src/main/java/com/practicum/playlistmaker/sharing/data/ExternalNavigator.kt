@@ -10,10 +10,10 @@ class ExternalNavigator(private val context: Context) {
     fun shareLink() {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.Share_click))
+            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_click))
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.Share_app)).apply {
+        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_app)).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }
@@ -29,7 +29,7 @@ class ExternalNavigator(private val context: Context) {
     fun openEmail() {
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.My_email)))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.my_email)))
             putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.topic))
             putExtra(Intent.EXTRA_TEXT, context.getString(R.string.message))
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

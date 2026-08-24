@@ -30,19 +30,19 @@
 
             <Button
                 android:id="@+id/magnifier"
-                android:text="@string/Search"
+                android:text="@string/search"
                 app:icon="@drawable/ic_magnifier"
                 style="@style/Buttons_main"/>
 
             <Button
                 android:id="@+id/media_library"
-                android:text="@string/Media_library"
+                android:text="@string/media_library"
                 app:icon="@drawable/ic_media_library"
                 style="@style/Buttons_main"/>
 
             <Button
                 android:id="@+id/settings"
-                android:text="@string/Settings"
+                android:text="@string/settings"
                 app:icon="@drawable/ic_settings"
                 style="@style/Buttons_main"/>
 
