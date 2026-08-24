@@ -71,7 +71,7 @@
 
             <TextView
                 style="@style/Settings_text"
-                android:text="@string/user_Agreement" />
+                android:text="@string/user_agreement" />
 
             <ImageView
                 style="@style/Settings_icon"
