@@ -69,4 +69,8 @@ dependencies {
 
     //Koin
     implementation("io.insert-koin:koin-android:3.3.0")
+
+    //viewpager2
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
 }

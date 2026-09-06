@@ -1,28 +1,33 @@
 <resources>
     <string name="app_name">PlaylistMaker</string>
-    <string name="User_Agreement">Пользовательское соглашение</string>
-    <string name="Write_to_support">Написать в поддержку</string>
-    <string name="Share_app">Поделиться приложением</string>
-    <string name="Dark_theme">Темная тема</string>
-    <string name="Search">Поиск</string>
-    <string name="Media_library">Медиатека</string>
-    <string name="Settings">Настройки</string>
-    <string name="Share_click">https://practicum.yandex.com/android-developer/?from=catalog</string>
-    <string name="My_email">kbetkabmope@gmail.com</string>
+    <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="write_to_support">Написать в поддержку</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="search">Поиск</string>
+    <string name="media_library">Медиатека</string>
+    <string name="settings">Настройки</string>
+    <string name="share_click">https://practicum.yandex.com/android-developer/?from=catalog</string>
+    <string name="my_email">kbetkabmope@gmail.com</string>
     <string name="topic">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="link_to_the_user_agreement_">https://yandex.ru/legal/practicum_offer/ru/</string>
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="connection_error_title">Проблемы со связью</string>
     <string name="connection_error_message">Загрузка не удалась. Проверьте\nподключение к интернету</string>
-    <string name="Update">Обновить</string>
-    <string name="Clear_history">Очистить историю</string>
-    <string name="You_were_looking_for">Вы искали</string>
-    <string name="Duration">Длительность</string>
-    <string name="Album">Альбом</string>
-    <string name="Year">Год</string>
-    <string name="Genre">Жанр</string>
-    <string name="Country">Страна</string>
+    <string name="update">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="you_were_looking_for">Вы искали</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="favorite_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="your_media_library_is_empty">Ваша медиатека пуста</string>
+    <string name="playlists_empty_state_message">Вы не создали\nни одного плейлиста</string>
+    <string name="new_playlist">Новый плейлист</string>
 
 <!--    <string name="..."></string>-->
 </resources>
