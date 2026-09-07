@@ -102,41 +102,63 @@ class SearchFragment : Fragment() {
 
     private fun render(state: SearchScreenState) {
         when (state) {
-            SearchScreenState.Loading -> {
-                binding.historyContainer.visibility = View.GONE
-                binding.recyclerView.visibility = View.GONE
-                binding.progressBar.visibility = View.VISIBLE
-            }
-            is SearchScreenState.Success -> {
-                binding.progressBar.visibility = View.GONE
-                binding.historyContainer.visibility = View.GONE
-                trackAdapter.updateTracks(state.tracks)
-                binding.recyclerView.visibility = View.VISIBLE
-            }
-            is SearchScreenState.History -> {
-                binding.progressBar.visibility = View.GONE
-                binding.recyclerView.visibility = View.GONE
-                historyAdapter.updateTracks(state.tracks)
-                binding.historyContainer.visibility = View.VISIBLE
-            }
-            SearchScreenState.Error -> {
-                binding.progressBar.visibility = View.GONE
-                binding.historyContainer.visibility = View.GONE
-                binding.recyclerView.visibility = View.GONE
-                trackAdapter.updateTracks(emptyList())
-            }
-            SearchScreenState.NotFound -> {
-                binding.progressBar.visibility = View.GONE
-                binding.historyContainer.visibility = View.GONE
-                binding.recyclerView.visibility = View.GONE
-                trackAdapter.updateTracks(emptyList())
-            }
-            SearchScreenState.Empty -> {
-                binding.progressBar.visibility = View.GONE
-                binding.historyContainer.visibility = View.GONE
-                binding.recyclerView.visibility = View.GONE
-            }
+            SearchScreenState.Loading -> showLoading()
+            is SearchScreenState.Success -> showSuccess(state.tracks)
+            is SearchScreenState.History -> showHistory(state.tracks)
+            SearchScreenState.Error -> showError()
+            SearchScreenState.NotFound -> showNotFound()
+            SearchScreenState.Empty -> showEmpty()
         }
+    }
+
+    private fun showLoading() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
+    }
+
+    private fun showSuccess(tracks: List<Track>) {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
+        trackAdapter.updateTracks(tracks)
+        binding.recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun showHistory(tracks: List<Track>) {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
+        historyAdapter.updateTracks(tracks)
+        binding.historyContainer.visibility = View.VISIBLE
+    }
+
+    private fun showError() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.VISIBLE
+    }
+
+    private fun showNotFound() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.VISIBLE
+    }
+
+    private fun showEmpty() {
+        binding.progressBar.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
     }
 
     private fun openAudioPlayer(track: Track) {

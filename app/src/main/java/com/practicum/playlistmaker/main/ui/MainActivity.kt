@@ -21,7 +21,6 @@ import com.practicum.playlistmaker.settings.ui.SettingsFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,37 +29,29 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
         val navController = navHostFragment.navController
-
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        setupKeyboardListener()
-    }
-
-    private fun setupKeyboardListener() {
-        globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val r = Rect()
-            binding.root.getWindowVisibleDisplayFrame(r)
-            val screenHeight = binding.root.rootView.height
-            val keypadHeight = screenHeight - r.bottom
-            val minKeyboardHeightPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                200f,
-                resources.displayMetrics
-            ).toInt()
-
-            if (keypadHeight > minKeyboardHeightPx) {
-                binding.bottomNavigationView.visibility = View.GONE
-                binding.navigationDivider.visibility = View.GONE
-            } else {
-                binding.bottomNavigationView.visibility = View.VISIBLE
-                binding.navigationDivider.visibility = View.VISIBLE
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.fragmentMediaLibrary,
+                R.id.fragmentSearch,
+                R.id.fragmentSettings -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.navigationDivider.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                    binding.navigationDivider.visibility = View.GONE
+                }
             }
         }
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            binding.bottomNavigationView.visibility = if (imeVisible) View.GONE else View.VISIBLE
+            binding.navigationDivider.visibility = if (imeVisible) View.GONE else View.VISIBLE
+
+            insets
+        }
     }
 }
