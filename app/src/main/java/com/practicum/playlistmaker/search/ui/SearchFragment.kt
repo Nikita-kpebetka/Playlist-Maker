@@ -3,7 +3,9 @@ package com.practicum.playlistmaker.search.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
@@ -11,33 +13,36 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.AudioPlayerActivity
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.AudioPlayerFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
 
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: SearchViewModel by viewModel()
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
-    private val viewModel: SearchViewModel by viewModel()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             if (viewModel.clickDebounce()) {
@@ -45,7 +50,7 @@ class SearchActivity : AppCompatActivity() {
                 openAudioPlayer(track)
             }
         }
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = trackAdapter
 
         historyAdapter = TrackAdapter(emptyList()) { track ->
@@ -54,10 +59,10 @@ class SearchActivity : AppCompatActivity() {
                 openAudioPlayer(track)
             }
         }
-        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 
-        viewModel.screenState.observe(this) { state ->
+        viewModel.screenState.observe(viewLifecycleOwner) { state ->
             render(state)
         }
 
@@ -68,8 +73,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.searchEditText.doOnTextChanged { s, _, _, _ ->
-            binding.clearButton.visibility = clearButtonVisibility(s)
-
+            binding.clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             if (s.isNullOrEmpty()) {
                 viewModel.clearSearch()
             } else {
@@ -80,21 +84,12 @@ class SearchActivity : AppCompatActivity() {
 
         binding.clearButton.setOnClickListener {
             binding.searchEditText.setText("")
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
         }
 
-        binding.btnClearHistory.setOnClickListener {
-            viewModel.clearHistory()
-        }
-
-        binding.btnRefresh.setOnClickListener {
-            viewModel.refreshSearch()
-        }
-
-        binding.backButton.setNavigationOnClickListener {
-            finish()
-        }
+        binding.btnClearHistory.setOnClickListener { viewModel.clearHistory() }
+        binding.btnRefresh.setOnClickListener { viewModel.refreshSearch() }
 
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -107,26 +102,28 @@ class SearchActivity : AppCompatActivity() {
 
     private fun render(state: SearchScreenState) {
         when (state) {
-            is SearchScreenState.Loading -> showLoading()
+            SearchScreenState.Loading -> showLoading()
             is SearchScreenState.Success -> showSuccess(state.tracks)
             is SearchScreenState.History -> showHistory(state.tracks)
-            is SearchScreenState.Error -> showError()
-            is SearchScreenState.NotFound -> showNotFound()
-            is SearchScreenState.Empty -> showEmpty()
+            SearchScreenState.Error -> showError()
+            SearchScreenState.NotFound -> showNotFound()
+            SearchScreenState.Empty -> showEmpty()
         }
     }
 
     private fun showLoading() {
-        binding.historyContainer.visibility = View.GONE
-        binding.recyclerView.visibility = View.GONE
-        showPlaceholder(View.GONE, View.GONE)
         binding.progressBar.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
+        binding.historyContainer.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
     }
 
     private fun showSuccess(tracks: List<Track>) {
         binding.progressBar.visibility = View.GONE
         binding.historyContainer.visibility = View.GONE
-        showPlaceholder(View.GONE, View.GONE)
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
         trackAdapter.updateTracks(tracks)
         binding.recyclerView.visibility = View.VISIBLE
     }
@@ -134,7 +131,8 @@ class SearchActivity : AppCompatActivity() {
     private fun showHistory(tracks: List<Track>) {
         binding.progressBar.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
-        showPlaceholder(View.GONE, View.GONE)
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
         historyAdapter.updateTracks(tracks)
         binding.historyContainer.visibility = View.VISIBLE
     }
@@ -143,53 +141,40 @@ class SearchActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.GONE
         binding.historyContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
-        trackAdapter.updateTracks(emptyList())
-        showPlaceholder(View.GONE, View.VISIBLE)
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.VISIBLE
     }
 
     private fun showNotFound() {
         binding.progressBar.visibility = View.GONE
         binding.historyContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
-        trackAdapter.updateTracks(emptyList())
-        showPlaceholder(View.VISIBLE, View.GONE)
+        binding.placeholderError.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.VISIBLE
     }
 
     private fun showEmpty() {
         binding.progressBar.visibility = View.GONE
         binding.historyContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
-        showPlaceholder(View.GONE, View.GONE)
-    }
-
-    private fun showPlaceholder(emptyVisibility: Int, errorVisibility: Int) {
-        binding.placeholderEmpty.visibility = emptyVisibility
-        binding.placeholderError.visibility = errorVisibility
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT_KEY, binding.searchEditText.text.toString())
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val savedText = savedInstanceState.getString(SEARCH_TEXT_KEY, "")
-        binding.searchEditText.setText(savedText)
-    }
-
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
     }
 
     private fun openAudioPlayer(track: Track) {
-        val intent = Intent(this, AudioPlayerActivity::class.java)
         val trackJson = Gson().toJson(track)
-        intent.putExtra(AudioPlayerActivity.TRACK_DATA_KEY, trackJson)
-        startActivity(intent)
+        val bundle = Bundle().apply {
+            putString(AudioPlayerFragment.TRACK_DATA_KEY, trackJson)
+        }
+
+        findNavController().navigate(
+            R.id.action_fragmentSearch_to_fragmentAudioPlayer,
+            bundle
+        )
     }
 
-    companion object {
-        private const val SEARCH_TEXT_KEY = "SEARCH_TEXT_KEY"
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

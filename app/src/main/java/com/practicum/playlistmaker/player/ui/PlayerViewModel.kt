@@ -38,11 +38,6 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        stopAndReleasePlayer()
-    }
-
     fun preparePlayer(previewUrl: String?) {
         if (previewUrl.isNullOrEmpty() || playerState != STATE_DEFAULT) return
 
@@ -83,9 +78,11 @@ class PlayerViewModel : ViewModel() {
         handler.post(updateTimerRunnable)
     }
 
-    private fun stopAndReleasePlayer() {
+    fun stopAndReleasePlayer() {
         handler.removeCallbacks(updateTimerRunnable)
+        mediaPlayer.stop()
         mediaPlayer.release()
+        playerState = STATE_DEFAULT
     }
 
     companion object {

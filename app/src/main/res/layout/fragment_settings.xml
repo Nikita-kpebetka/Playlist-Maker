@@ -7,16 +7,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/Settings_screen_template"
-    tools:context=".presentation.search.ui.SearchActivity">
+    tools:layout="@layout/fragment_settings"
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusable="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/backButton"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/black"
-            app:title="@string/settings"
-            app:titleTextAppearance="@style/Toolbar_title" />
+    <TextView
+        android:id="@+id/tvSearchHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:text="@string/settings"
+        android:fontFamily="@font/ys_display_bold"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
 
         <FrameLayout
             android:layout_width="match_parent"
