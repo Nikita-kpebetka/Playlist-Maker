@@ -35,7 +35,7 @@ val dataModule = module {
     single { ExternalNavigator(androidContext()) }
 
     single<TracksRepository> {
-        TracksRepositoryImpl()
+        TracksRepositoryImpl(get())
     }
 
     single<SearchHistoryRepository> {

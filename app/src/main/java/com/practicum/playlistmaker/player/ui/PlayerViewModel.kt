@@ -8,15 +8,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
 class PlayerViewModel : ViewModel() {
 
-    private var mediaPlayer = MediaPlayer()
-    private val handler = Handler(Looper.getMainLooper())
+    private var mediaPlayer: MediaPlayer? = MediaPlayer()
     private var playerState = STATE_DEFAULT
+
+    private var timerJob: Job? = null
 
     private val _playerScreenState = MutableLiveData<PlayerScreenState>()
     val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
@@ -27,30 +32,30 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    private val updateTimerRunnable = object : Runnable {
-        override fun run() {
-            if (playerState == STATE_PLAYING) {
-                _playerScreenState.value = PlayerScreenState.Playing(
-                    trackTimeFormatter.format(mediaPlayer.currentPosition)
-                )
-                handler.postDelayed(this, TIMER_UPDATE_DELAY)
-            }
-        }
-    }
-
     fun preparePlayer(previewUrl: String?) {
-        if (previewUrl.isNullOrEmpty() || playerState != STATE_DEFAULT) return
+        if (previewUrl.isNullOrEmpty()) return
 
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
-            _playerScreenState.value = PlayerScreenState.Prepared
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer()
         }
-        mediaPlayer.setOnCompletionListener {
-            handler.removeCallbacks(updateTimerRunnable)
-            playerState = STATE_PREPARED
-            _playerScreenState.value = PlayerScreenState.Paused(PLAY_TIME_START)
+
+        try {
+            mediaPlayer?.apply {
+                reset()
+                setDataSource(previewUrl)
+                prepareAsync()
+                setOnPreparedListener {
+                    playerState = STATE_PREPARED
+                    _playerScreenState.value = PlayerScreenState.Prepared
+                }
+                setOnCompletionListener {
+                    stopTimer()
+                    playerState = STATE_PREPARED
+                    _playerScreenState.value = PlayerScreenState.Prepared
+                }
+            }
+        } catch (e: Exception) {
+            playerState = STATE_DEFAULT
         }
     }
 
@@ -63,26 +68,54 @@ class PlayerViewModel : ViewModel() {
 
     fun pausePlayer() {
         if (playerState == STATE_PLAYING) {
-            mediaPlayer.pause()
+            mediaPlayer?.pause()
             playerState = STATE_PAUSED
-            handler.removeCallbacks(updateTimerRunnable)
-            _playerScreenState.value = PlayerScreenState.Paused(
-                trackTimeFormatter.format(mediaPlayer.currentPosition)
-            )
+            stopTimer()
+            mediaPlayer?.let {
+                _playerScreenState.value = PlayerScreenState.Paused(
+                    trackTimeFormatter.format(it.currentPosition)
+                )
+            }
         }
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        mediaPlayer?.start()
         playerState = STATE_PLAYING
-        handler.post(updateTimerRunnable)
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (playerState == STATE_PLAYING) {
+                mediaPlayer?.let {
+                    _playerScreenState.value = PlayerScreenState.Playing(
+                        trackTimeFormatter.format(it.currentPosition)
+                    )
+                }
+                delay(TIMER_UPDATE_DELAY)
+            }
+        }
+    }
+
+    private fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
     }
 
     fun stopAndReleasePlayer() {
-        handler.removeCallbacks(updateTimerRunnable)
-        mediaPlayer.stop()
-        mediaPlayer.release()
+        stopTimer()
+        mediaPlayer?.apply {
+            stop()
+            release()
+        }
+        mediaPlayer = null
         playerState = STATE_DEFAULT
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopAndReleasePlayer()
     }
 
     companion object {
@@ -91,6 +124,5 @@ class PlayerViewModel : ViewModel() {
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
         private const val TIMER_UPDATE_DELAY = 300L
-        private const val PLAY_TIME_START = "00:00"
     }
 }
