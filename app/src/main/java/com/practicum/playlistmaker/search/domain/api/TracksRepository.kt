@@ -1,8 +1,9 @@
 package com.practicum.playlistmaker.search.domain.api
 
 import com.practicum.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.flow.Flow
 
 
 interface TracksRepository {
-    fun searchTracks(expression: String, onSuccess: (List<Track>) -> Unit, onError: () -> Unit)
+    fun searchTracks(expression: String): Flow<List<Track>>
 }

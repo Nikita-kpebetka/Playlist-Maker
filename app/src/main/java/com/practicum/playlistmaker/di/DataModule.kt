@@ -20,7 +20,7 @@ val dataModule = module {
 
     single<iTunesApi> {
         Retrofit.Builder()
-            .baseUrl("https://apple.com")
+            .baseUrl("https://itunes.apple.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(iTunesApi::class.java)
@@ -35,7 +35,7 @@ val dataModule = module {
     single { ExternalNavigator(androidContext()) }
 
     single<TracksRepository> {
-        TracksRepositoryImpl()
+        TracksRepositoryImpl(get())
     }
 
     single<SearchHistoryRepository> {
