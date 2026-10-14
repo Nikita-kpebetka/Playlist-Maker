@@ -1,14 +1,12 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.app.Application
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.library.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,7 +14,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val favoritesInteractor: FavoritesInteractor
+) : ViewModel() {
 
     private var mediaPlayer: MediaPlayer? = MediaPlayer()
     private var playerState = STATE_DEFAULT
@@ -26,9 +26,31 @@ class PlayerViewModel : ViewModel() {
     private val _playerScreenState = MutableLiveData<PlayerScreenState>()
     val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
+
     private val trackTimeFormatter by lazy {
         SimpleDateFormat("mm:ss", Locale.getDefault()).apply {
             timeZone = TimeZone.getTimeZone("UTC")
+        }
+    }
+
+    fun checkFavoriteStatus(trackId: Long) {
+        viewModelScope.launch {
+            _isFavorite.value = favoritesInteractor.isFavorite(trackId)
+        }
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            val currentStatus = _isFavorite.value ?: false
+            if (currentStatus) {
+                favoritesInteractor.removeTrack(track)
+                _isFavorite.value = false
+            } else {
+                favoritesInteractor.addTrack(track)
+                _isFavorite.value = true
+            }
         }
     }
 

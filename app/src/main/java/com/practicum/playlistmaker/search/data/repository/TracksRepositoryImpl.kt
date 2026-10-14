@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.data.repository
 
-import com.practicum.playlistmaker.search.data.dto.SearchResponse
-import com.practicum.playlistmaker.search.data.network.RetrofitClient
+import com.practicum.playlistmaker.library.data.db.TrackDao
 import com.practicum.playlistmaker.search.data.network.iTunesApi
 import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -9,12 +8,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class TracksRepositoryImpl(
-    private val iTunesService: iTunesApi
+    private val iTunesService: iTunesApi,
+    private val trackDao: TrackDao
 ) : TracksRepository {
 
     override fun searchTracks(expression: String): Flow<List<Track>> = flow {
@@ -34,6 +31,13 @@ class TracksRepositoryImpl(
                     previewUrl = dto.previewUrl
                 )
             }
+
+            val favoriteIds = trackDao.getFavoriteTrackIds()
+
+            domainTracks.forEach { track ->
+                track.isFavorite = favoriteIds.contains(track.trackId)
+            }
+
             emit(domainTracks)
         } catch (e: Exception) {
             throw e

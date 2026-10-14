@@ -69,6 +69,17 @@ class AudioPlayerFragment : Fragment() {
             .transform(CenterCrop(), RoundedCorners(radiusPx))
             .into(binding.ivAlbumCover)
 
+        viewModel.checkFavoriteStatus(track.trackId)
+
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            val iconRes = if (isFavorite) R.drawable.ic_favorite2 else R.drawable.ic_favorite1
+            binding.btnAddToFavorite.setImageResource(iconRes)
+        }
+
+        binding.btnAddToFavorite.setOnClickListener {
+            viewModel.onFavoriteClicked(track)
+        }
+
         viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PlayerScreenState.Playing -> {
