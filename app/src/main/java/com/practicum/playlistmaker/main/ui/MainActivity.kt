@@ -27,31 +27,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.container) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.fragmentMediaLibrary,
-                R.id.fragmentSearch,
-                R.id.fragmentSettings -> {
-                    binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.navigationDivider.visibility = View.VISIBLE
-                }
-                else -> {
+                R.id.fragmentAudioPlayer -> {
                     binding.bottomNavigationView.visibility = View.GONE
                     binding.navigationDivider.visibility = View.GONE
                 }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.navigationDivider.visibility = View.VISIBLE
+                }
             }
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            binding.bottomNavigationView.visibility = if (imeVisible) View.GONE else View.VISIBLE
-            binding.navigationDivider.visibility = if (imeVisible) View.GONE else View.VISIBLE
-
-            insets
         }
     }
 }
