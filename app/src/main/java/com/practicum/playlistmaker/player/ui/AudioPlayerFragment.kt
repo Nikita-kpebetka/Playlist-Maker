@@ -69,25 +69,39 @@ class AudioPlayerFragment : Fragment() {
             .transform(CenterCrop(), RoundedCorners(radiusPx))
             .into(binding.ivAlbumCover)
 
-        viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is PlayerScreenState.Playing -> {
-                    binding.btnPlay.setImageResource(R.drawable.ic_pause)
-                    binding.tvPlayTime.text = state.component1()
-                }
-                is PlayerScreenState.Paused -> {
-                    binding.btnPlay.setImageResource(R.drawable.ic_play)
-                    binding.tvPlayTime.text = state.component1()
-                }
-                is PlayerScreenState.Prepared -> {
-                    binding.btnPlay.setImageResource(R.drawable.ic_play)
-                    binding.tvPlayTime.text = "00:00"
-                }
-            }
+        viewModel.checkFavoriteStatus(track.trackId)
+
+        binding.btnAddToFavorite.setOnClickListener {
+            viewModel.onFavoriteClicked(track)
         }
 
         binding.btnPlay.setOnClickListener {
             viewModel.playbackControl()
+        }
+
+        viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
+            val updateFavoriteIcon = { isFavorite: Boolean ->
+                val iconRes = if (isFavorite) R.drawable.ic_favorite2 else R.drawable.ic_favorite1
+                binding.btnAddToFavorite.setImageResource(iconRes)
+            }
+
+            when (state) {
+                is PlayerScreenState.Playing -> {
+                    binding.btnPlay.setImageResource(R.drawable.ic_pause)
+                    binding.tvPlayTime.text = state.progress
+                    updateFavoriteIcon(state.isFavorite)
+                }
+                is PlayerScreenState.Paused -> {
+                    binding.btnPlay.setImageResource(R.drawable.ic_play)
+                    binding.tvPlayTime.text = state.progress
+                    updateFavoriteIcon(state.isFavorite)
+                }
+                is PlayerScreenState.Prepared -> {
+                    binding.btnPlay.setImageResource(R.drawable.ic_play)
+                    binding.tvPlayTime.text = "00:00"
+                    updateFavoriteIcon(state.isFavorite)
+                }
+            }
         }
 
         viewModel.preparePlayer(track.previewUrl)
