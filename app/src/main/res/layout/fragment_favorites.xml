@@ -9,7 +9,7 @@
         android:id="@+id/favoritesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="16dp"
+        android:paddingTop="16dp"
         android:visibility="gone"
         tools:listitem="@layout/recycler_view_item" />
 
@@ -19,7 +19,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="24dp"
         android:visibility="gone">
 
         <ImageView

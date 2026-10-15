@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.di
 
 import android.content.Context
+import android.media.MediaPlayer
 import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.library.data.db.AppDatabase
@@ -61,5 +62,7 @@ val dataModule = module {
     factory { TrackDbConvertor() }
 
     single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get()) }
+
+    factory { MediaPlayer() }
 
 }
