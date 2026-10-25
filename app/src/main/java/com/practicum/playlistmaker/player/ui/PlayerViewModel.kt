@@ -1,14 +1,12 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.app.Application
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.library.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,14 +14,18 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val favoritesInteractor: FavoritesInteractor,
+    private val mediaPlayer: MediaPlayer
+) : ViewModel() {
 
-    private var mediaPlayer: MediaPlayer? = MediaPlayer()
     private var playerState = STATE_DEFAULT
-
     private var timerJob: Job? = null
 
-    private val _playerScreenState = MutableLiveData<PlayerScreenState>()
+    private var currentProgress = "00:00"
+    private var currentIsFavorite = false
+
+    private val _playerScreenState = MutableLiveData<PlayerScreenState>(PlayerScreenState.Prepared(false))
     val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
 
     private val trackTimeFormatter by lazy {
@@ -32,26 +34,44 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
+    fun checkFavoriteStatus(trackId: Long) {
+        viewModelScope.launch {
+            currentIsFavorite = favoritesInteractor.isFavorite(trackId)
+            updateStateByPlayerState()
+        }
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            if (currentIsFavorite) {
+                favoritesInteractor.removeTrack(track)
+                currentIsFavorite = false
+            } else {
+                favoritesInteractor.addTrack(track)
+                currentIsFavorite = true
+            }
+            updateStateByPlayerState()
+        }
+    }
+
     fun preparePlayer(previewUrl: String?) {
         if (previewUrl.isNullOrEmpty()) return
 
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer()
-        }
-
         try {
-            mediaPlayer?.apply {
+            mediaPlayer.apply {
                 reset()
                 setDataSource(previewUrl)
                 prepareAsync()
                 setOnPreparedListener {
                     playerState = STATE_PREPARED
-                    _playerScreenState.value = PlayerScreenState.Prepared
+                    currentProgress = "00:00"
+                    _playerScreenState.value = PlayerScreenState.Prepared(currentIsFavorite)
                 }
                 setOnCompletionListener {
                     stopTimer()
                     playerState = STATE_PREPARED
-                    _playerScreenState.value = PlayerScreenState.Prepared
+                    currentProgress = "00:00"
+                    _playerScreenState.value = PlayerScreenState.Prepared(currentIsFavorite)
                 }
             }
         } catch (e: Exception) {
@@ -68,30 +88,33 @@ class PlayerViewModel : ViewModel() {
 
     fun pausePlayer() {
         if (playerState == STATE_PLAYING) {
-            mediaPlayer?.pause()
-            playerState = STATE_PAUSED
-            stopTimer()
-            mediaPlayer?.let {
-                _playerScreenState.value = PlayerScreenState.Paused(
-                    trackTimeFormatter.format(it.currentPosition)
-                )
+            try {
+                mediaPlayer.pause()
+                playerState = STATE_PAUSED
+                stopTimer()
+                currentProgress = trackTimeFormatter.format(mediaPlayer.currentPosition)
+                _playerScreenState.value = PlayerScreenState.Paused(currentProgress, currentIsFavorite)
+            } catch (e: Exception) {
             }
         }
     }
 
     private fun startPlayer() {
-        mediaPlayer?.start()
-        playerState = STATE_PLAYING
-        startTimer()
+        try {
+            mediaPlayer.start()
+            playerState = STATE_PLAYING
+            startTimer()
+        } catch (e: Exception) {
+        }
     }
 
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (playerState == STATE_PLAYING) {
-                mediaPlayer?.let {
-                    _playerScreenState.value = PlayerScreenState.Playing(
-                        trackTimeFormatter.format(it.currentPosition)
-                    )
+                try {
+                    currentProgress = trackTimeFormatter.format(mediaPlayer.currentPosition)
+                    _playerScreenState.value = PlayerScreenState.Playing(currentProgress, currentIsFavorite)
+                } catch (e: Exception) {
                 }
                 delay(TIMER_UPDATE_DELAY)
             }
@@ -103,14 +126,25 @@ class PlayerViewModel : ViewModel() {
         timerJob = null
     }
 
+    private fun updateStateByPlayerState() {
+        _playerScreenState.value = when (playerState) {
+            STATE_PLAYING -> PlayerScreenState.Playing(currentProgress, currentIsFavorite)
+            STATE_PAUSED -> PlayerScreenState.Paused(currentProgress, currentIsFavorite)
+            else -> PlayerScreenState.Prepared(currentIsFavorite)
+        }
+    }
+
     fun stopAndReleasePlayer() {
         stopTimer()
-        mediaPlayer?.apply {
-            stop()
-            release()
+        try {
+            mediaPlayer.apply {
+                if (isPlaying) stop()
+                release()
+            }
+        } catch (e: Exception) {
+        } finally {
+            playerState = STATE_DEFAULT
         }
-        mediaPlayer = null
-        playerState = STATE_DEFAULT
     }
 
     override fun onCleared() {
