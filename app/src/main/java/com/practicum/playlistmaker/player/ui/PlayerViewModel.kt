@@ -6,9 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.library.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.library.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -16,7 +20,8 @@ import java.util.TimeZone
 
 class PlayerViewModel(
     private val favoritesInteractor: FavoritesInteractor,
-    private val mediaPlayer: MediaPlayer
+    private val mediaPlayer: MediaPlayer,
+    private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
     private var playerState = STATE_DEFAULT
@@ -28,9 +33,36 @@ class PlayerViewModel(
     private val _playerScreenState = MutableLiveData<PlayerScreenState>(PlayerScreenState.Prepared(false))
     val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
 
+    private val _playlistsLiveData = MutableLiveData<List<Playlist>>()
+    val playlistsLiveData: LiveData<List<Playlist>> = _playlistsLiveData
+
+    private val _showToastLiveData = MutableLiveData<String>()
+    val showToastLiveData: LiveData<String> = _showToastLiveData
+
     private val trackTimeFormatter by lazy {
         SimpleDateFormat("mm:ss", Locale.getDefault()).apply {
             timeZone = TimeZone.getTimeZone("UTC")
+        }
+    }
+
+    fun observePlaylists() {
+        viewModelScope.launch {
+            playlistsInteractor.getPlaylists()
+                .flowOn(Dispatchers.IO)
+                .collect { list ->
+                    _playlistsLiveData.postValue(list)
+                }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist, track: Track) {
+        viewModelScope.launch {
+            val isAdded = playlistsInteractor.addTrackToPlaylist(playlist.id, track.trackId.toString())
+            if (isAdded) {
+                _showToastLiveData.postValue("Добавлено в плейлист [${playlist.name}]")
+            } else {
+                _showToastLiveData.postValue("Трек уже добавлен в плейлист [${playlist.name}]")
+            }
         }
     }
 
@@ -139,7 +171,7 @@ class PlayerViewModel(
         try {
             mediaPlayer.apply {
                 if (isPlaying) stop()
-                release()
+                reset()
             }
         } catch (e: Exception) {
         } finally {
@@ -149,7 +181,11 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        stopAndReleasePlayer()
+        stopTimer()
+        try {
+            mediaPlayer.release()
+        } catch (e: Exception) {
+        }
     }
 
     companion object {

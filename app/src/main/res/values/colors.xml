@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#1A1B22</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white_background">#FFFFFFFF</color>
+    <color name="gray">#AEAFB4</color>
     <color name="on_menu">#3772E7</color>
     <color name="button_dark_theme">#00D6C3</color>
     <color name="cl_icon">#AEAFB4</color>
@@ -11,6 +12,9 @@
     <color name="cl_ic_audio_player">#1A1B22</color>
     <color name="progressBar">#3772E7</color>
     <color name="off_menu">#1A1B22</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="frame_add_photo">#C4C4C4</color>
+
 
 <!--    <color name=""></color>-->
 

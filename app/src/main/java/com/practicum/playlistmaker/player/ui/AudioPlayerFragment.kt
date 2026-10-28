@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentAudioPlayerBinding
@@ -46,8 +50,10 @@ class AudioPlayerFragment : Fragment() {
         val trackJson = arguments?.getString(TRACK_DATA_KEY)
         val track = Gson().fromJson(trackJson, Track::class.java)
 
+        val navController = NavHostFragment.findNavController(this)
+
         binding.backButton.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            navController.navigateUp()
         }
 
         binding.tvTrackName.text = track.trackName
@@ -79,6 +85,40 @@ class AudioPlayerFragment : Fragment() {
             viewModel.playbackControl()
         }
 
+        val bottomSheetBehavior = BottomSheetBehavior.from<ConstraintLayout>(binding.bottomSheetPlaylists.root).apply {
+            isHideable = true
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        val playlistsAdapter = PlayerPlaylistsAdapter { clickedPlaylist ->
+            viewModel.addTrackToPlaylist(clickedPlaylist, track)
+        }
+
+        binding.bottomSheetPlaylists.rvBottomSheetPlaylists.layoutManager = LinearLayoutManager(requireContext())
+        binding.bottomSheetPlaylists.rvBottomSheetPlaylists.adapter = playlistsAdapter
+        binding.btnAddToPlaylist.setOnClickListener {
+            viewModel.observePlaylists()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+
+        binding.bottomSheetPlaylists.btnNewPlaylistBottomSheet.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            navController.navigate(
+                R.id.action_fragmentAudioPlayer_to_newPlaylistFragment
+            )
+        }
+
+        viewModel.playlistsLiveData.observe(viewLifecycleOwner) { playlists ->
+            playlistsAdapter.playlists = playlists
+        }
+
+        viewModel.showToastLiveData.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrBlank()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+
         viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
             val updateFavoriteIcon = { isFavorite: Boolean ->
                 val iconRes = if (isFavorite) R.drawable.ic_favorite2 else R.drawable.ic_favorite1
@@ -105,6 +145,10 @@ class AudioPlayerFragment : Fragment() {
         }
 
         viewModel.preparePlayer(track.previewUrl)
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onPause() {

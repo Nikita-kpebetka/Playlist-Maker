@@ -1,21 +1,12 @@
 package com.practicum.playlistmaker.main.ui
 
-import android.graphics.Rect
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
-import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
-import com.practicum.playlistmaker.library.ui.MediaLibraryFragment
-import com.practicum.playlistmaker.search.ui.SearchFragment
-import com.practicum.playlistmaker.settings.ui.SettingsFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.fragmentAudioPlayer -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                    binding.navigationDivider.visibility = View.GONE
+                }
+                R.id.newPlaylistFragment -> {
                     binding.bottomNavigationView.visibility = View.GONE
                     binding.navigationDivider.visibility = View.GONE
                 }
