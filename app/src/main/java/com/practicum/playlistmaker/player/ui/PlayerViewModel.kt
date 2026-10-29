@@ -46,9 +46,8 @@ class PlayerViewModel(
     }
 
     fun observePlaylists() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             playlistsInteractor.getPlaylists()
-                .flowOn(Dispatchers.IO)
                 .collect { list ->
                     _playlistsLiveData.postValue(list)
                 }

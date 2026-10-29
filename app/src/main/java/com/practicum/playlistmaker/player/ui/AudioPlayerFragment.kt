@@ -96,20 +96,36 @@ class AudioPlayerFragment : Fragment() {
 
         binding.bottomSheetPlaylists.rvBottomSheetPlaylists.layoutManager = LinearLayoutManager(requireContext())
         binding.bottomSheetPlaylists.rvBottomSheetPlaylists.adapter = playlistsAdapter
+
         binding.btnAddToPlaylist.setOnClickListener {
             viewModel.observePlaylists()
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            binding.bottomSheetPlaylists.root.post {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            }
         }
 
         binding.bottomSheetPlaylists.btnNewPlaylistBottomSheet.setOnClickListener {
+            bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                        bottomSheetBehavior.removeBottomSheetCallback(this)
+                        navController.navigate(
+                            R.id.action_fragmentAudioPlayer_to_newPlaylistFragment
+                        )
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            navController.navigate(
-                R.id.action_fragmentAudioPlayer_to_newPlaylistFragment
-            )
         }
 
         viewModel.playlistsLiveData.observe(viewLifecycleOwner) { playlists ->
-            playlistsAdapter.playlists = playlists
+            if (playlists != null) {
+                playlistsAdapter.playlists = playlists
+                playlistsAdapter.notifyDataSetChanged()
+            }
         }
 
         viewModel.showToastLiveData.observe(viewLifecycleOwner) { message ->
@@ -145,10 +161,6 @@ class AudioPlayerFragment : Fragment() {
         }
 
         viewModel.preparePlayer(track.previewUrl)
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onPause() {

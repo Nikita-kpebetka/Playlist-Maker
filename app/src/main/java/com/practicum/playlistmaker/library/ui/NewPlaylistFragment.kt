@@ -111,12 +111,12 @@ class NewPlaylistFragment : Fragment() {
 
     private fun showConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNegativeButton("Отмена") { dialog, _ ->
+            .setTitle(getString(R.string.cancel_dialog_title))
+            .setMessage(getString(R.string.cancel_dialog_message))
+            .setNegativeButton(getString(R.string.cancel_dialog_negative)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Завершить") { _, _ ->
+            .setPositiveButton(getString(R.string.cancel_dialog_positive)) { _, _ ->
                 findNavController().navigateUp()
             }
             .show()

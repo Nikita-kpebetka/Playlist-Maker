@@ -31,6 +31,11 @@
     <string name="playlist_name">Название*</string>
     <string name="playlist_description">Описание</string>
     <string name="create">Создать</string>
+    <string name="cancel_dialog_title">Завершить создание плейлиста?</string>
+    <string name="cancel_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="cancel_dialog_negative">Отмена</string>
+    <string name="cancel_dialog_positive">Завершить</string>
+    <string name="add_to_playlist_title">Добавить в плейлист</string>
 
     <plurals name="tracks_count">
         <item quantity="one">%d трек</item>
