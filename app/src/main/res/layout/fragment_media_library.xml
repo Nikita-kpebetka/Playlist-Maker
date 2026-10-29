@@ -8,7 +8,7 @@
     android:orientation="vertical"
     style="@style/Settings_screen_template"
     tools:layout="@layout/fragment_media_library"
-    android:background="@color/white"
+    android:background="@color/white_background"
     android:clickable="true"
     android:focusable="true">
 
@@ -33,7 +33,7 @@
         app:tabSelectedTextColor="@color/black"
         app:tabIndicatorColor="@color/black"
         app:tabTextAppearance="@style/Settings_text"
-        android:background="@color/white" />
+        android:background="@color/white_background" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
