@@ -5,9 +5,12 @@ import android.media.MediaPlayer
 import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.library.data.db.AppDatabase
+import com.practicum.playlistmaker.library.data.db.PlaylistDbConvertor
 import com.practicum.playlistmaker.library.data.db.TrackDbConvertor
 import com.practicum.playlistmaker.library.data.repository.FavoritesRepositoryImpl
+import com.practicum.playlistmaker.library.data.repository.PlaylistsRepositoryImpl
 import com.practicum.playlistmaker.library.domain.api.FavoritesRepository
+import com.practicum.playlistmaker.library.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.search.data.network.iTunesApi
 import com.practicum.playlistmaker.search.data.repository.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.repository.TracksRepositoryImpl
@@ -54,6 +57,7 @@ val dataModule = module {
 
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -65,4 +69,9 @@ val dataModule = module {
 
     factory { MediaPlayer() }
 
+    single { get<AppDatabase>().playlistDao() }
+
+    factory { PlaylistDbConvertor() }
+
+    single<PlaylistsRepository> { PlaylistsRepositoryImpl(get(), get()) }
 }

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/white"
+    android:background="@color/white_background"
     android:clickable="true"
-    android:focusable="true"
-    >
+    android:focusable="true">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNewPlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,16 +22,38 @@
         android:insetBottom="0dp"
         android:text="@string/new_playlist"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        app:cornerRadius="54dp" />
+        android:textColor="@color/white_background"
+        android:textSize="14sp"
+        app:cornerRadius="54dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPlaylists"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnNewPlaylist"
+        tools:listitem="@layout/item_playlist_grid"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/emptyStateContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnNewPlaylist"
+        tools:visibility="gone">
 
         <ImageView
             android:layout_width="120dp"
@@ -46,6 +68,7 @@
             android:text="@string/playlists_empty_state_message"
             android:textColor="@color/black"
             android:textSize="19sp"
-            android:textAlignment="center" />
+            android:gravity="center" />
     </LinearLayout>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
