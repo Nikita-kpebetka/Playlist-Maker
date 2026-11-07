@@ -17,6 +17,8 @@ class TracksRepositoryImpl(
     override fun searchTracks(expression: String): Flow<List<Track>> = flow {
         try {
             val response = iTunesService.search(expression)
+            val favoriteIds = trackDao.getFavoriteTrackIds().map { it.toString() }
+
             val domainTracks = response.results.map { dto ->
                 Track(
                     trackId = dto.trackId,
@@ -28,14 +30,9 @@ class TracksRepositoryImpl(
                     releaseDate = dto.releaseDate,
                     primaryGenreName = dto.primaryGenreName,
                     country = dto.country,
-                    previewUrl = dto.previewUrl
+                    previewUrl = dto.previewUrl,
+                    isFavorite = favoriteIds.contains(dto.trackId.toString())
                 )
-            }
-
-            val favoriteIds = trackDao.getFavoriteTrackIds()
-
-            domainTracks.forEach { track ->
-                track.isFavorite = favoriteIds.contains(track.trackId)
             }
 
             emit(domainTracks)

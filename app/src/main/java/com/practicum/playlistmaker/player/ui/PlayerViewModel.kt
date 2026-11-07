@@ -12,7 +12,6 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -56,7 +55,7 @@ class PlayerViewModel(
 
     fun addTrackToPlaylist(playlist: Playlist, track: Track) {
         viewModelScope.launch {
-            val isAdded = playlistsInteractor.addTrackToPlaylist(playlist.id, track.trackId.toString())
+            val isAdded = playlistsInteractor.addTrackToPlaylist(playlist.id, track)
             if (isAdded) {
                 _showToastLiveData.postValue("Добавлено в плейлист [${playlist.name}]")
             } else {
