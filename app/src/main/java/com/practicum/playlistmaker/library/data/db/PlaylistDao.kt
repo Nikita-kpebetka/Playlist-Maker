@@ -26,4 +26,33 @@ interface PlaylistDao {
 
     @Query("UPDATE playlist_table SET tracksCount = tracksCount + 1 WHERE id = :playlistId")
     suspend fun incrementTracksCount(playlistId: Int)
+
+    @Query("""
+        SELECT favorite_tracks_table.* FROM favorite_tracks_table 
+        INNER JOIN playlist_track_table ON favorite_tracks_table.trackId = playlist_track_table.trackId 
+        WHERE playlist_track_table.playlistId = :playlistId
+        ORDER BY favorite_tracks_table.createdAt DESC
+    """)
+    fun getTracksForPlaylist(playlistId: Int): Flow<List<TrackEntity>>
+
+    @Query("DELETE FROM playlist_track_table WHERE playlistId = :playlistId AND trackId = :trackId")
+    suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: String)
+
+    @Query("UPDATE playlist_table SET tracksCount = tracksCount - 1 WHERE id = :playlistId")
+    suspend fun decrementTracksCount(playlistId: Int)
+
+    @Query("SELECT * FROM playlist_table WHERE id = :playlistId")
+    suspend fun getPlaylistById(playlistId: Int): PlaylistEntity
+
+    @Query("SELECT * FROM favorite_tracks_table WHERE trackId IN (:trackIds)")
+    fun getTracksByIds(trackIds: List<Long>): Flow<List<TrackEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTrackData(track: TrackEntity)
+
+    @Query("DELETE FROM playlist_table WHERE id = :playlistId")
+    suspend fun deletePlaylistById(playlistId: Int)
+
+    @Query("DELETE FROM playlist_track_table WHERE playlistId = :playlistId")
+    suspend fun deletePlaylistRelations(playlistId: Int)
 }

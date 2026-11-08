@@ -39,21 +39,29 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        trackAdapter = TrackAdapter(emptyList()) { track ->
-            if (viewModel.clickDebounce()) {
-                viewModel.addTrackToHistory(track)
-                openAudioPlayer(track)
-            }
-        }
+        trackAdapter = TrackAdapter(
+            tracks = emptyList(),
+            clickListener = { track ->
+                if (viewModel.clickDebounce()) {
+                    viewModel.addTrackToHistory(track)
+                    openAudioPlayer(track)
+                }
+            },
+            longClickListener = null
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = trackAdapter
 
-        historyAdapter = TrackAdapter(emptyList()) { track ->
-            if (viewModel.clickDebounce()) {
-                viewModel.addTrackToHistory(track)
-                openAudioPlayer(track)
-            }
-        }
+        historyAdapter = TrackAdapter(
+            tracks = emptyList(),
+            clickListener = { track ->
+                if (viewModel.clickDebounce()) {
+                    viewModel.addTrackToHistory(track)
+                    openAudioPlayer(track)
+                }
+            },
+            longClickListener = null
+        )
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 

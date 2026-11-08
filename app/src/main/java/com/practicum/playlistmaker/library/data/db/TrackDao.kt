@@ -16,12 +16,12 @@ interface TrackDao {
     @Delete
     suspend fun deleteTrack(track: TrackEntity)
 
-    @Query("SELECT * FROM favorite_tracks_table ORDER BY createdAt DESC")
+    @Query("SELECT * FROM favorite_tracks_table WHERE isFavoriteTrack = 1 ORDER BY createdAt DESC")
     fun getFavoriteTracks(): Flow<List<TrackEntity>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_tracks_table WHERE trackId = :id)")
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_tracks_table WHERE trackId = :id AND isFavoriteTrack = 1)")
     suspend fun isFavorite(id: Long): Boolean
 
-    @Query("SELECT trackId FROM favorite_tracks_table")
+    @Query("SELECT trackId FROM favorite_tracks_table WHERE isFavoriteTrack = 1")
     suspend fun getFavoriteTrackIds(): List<Long>
 }

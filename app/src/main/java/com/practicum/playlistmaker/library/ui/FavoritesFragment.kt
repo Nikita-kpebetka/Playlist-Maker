@@ -33,16 +33,20 @@ class FavoritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TrackAdapter(emptyList()) { track ->
-            val trackJson = Gson().toJson(track)
-            val bundle = Bundle().apply {
-                putString(AudioPlayerFragment.TRACK_DATA_KEY, trackJson)
-            }
-            findNavController().navigate(
-                R.id.action_fragmentMediaLibrary_to_fragmentAudioPlayer,
-                bundle
-            )
-        }
+        adapter = TrackAdapter(
+            tracks = emptyList(),
+            clickListener = { track ->
+                val trackJson = Gson().toJson(track)
+                val bundle = Bundle().apply {
+                    putString(AudioPlayerFragment.TRACK_DATA_KEY, trackJson)
+                }
+                findNavController().navigate(
+                    R.id.action_fragmentMediaLibrary_to_fragmentAudioPlayer,
+                    bundle
+                )
+            },
+            longClickListener = null
+        )
 
         binding.favoritesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.favoritesRecyclerView.adapter = adapter

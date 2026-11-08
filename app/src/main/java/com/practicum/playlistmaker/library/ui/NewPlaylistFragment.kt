@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.library.ui
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -25,15 +23,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
 
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
+    protected val viewModel: NewPlaylistViewModel by viewModel()
+    protected var imageUri: Uri? = null
+    protected var imagePath: String? = null
 
-    private val viewModel: NewPlaylistViewModel by viewModel()
-    private var imageUri: Uri? = null
-
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    protected open val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             imageUri = uri
             binding.ivPlaylistCover.setPadding(0, 0, 0, 0)
@@ -122,7 +120,7 @@ class NewPlaylistFragment : Fragment() {
             .show()
     }
 
-    private fun saveImageToPrivateStorage(uri: Uri): String {
+    protected fun saveImageToPrivateStorage(uri: Uri): String {
         val filePath = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "playlist_covers")
         if (!filePath.exists()) {
             filePath.mkdirs()

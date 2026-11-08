@@ -13,11 +13,11 @@ class FavoritesRepositoryImpl(
 ) : FavoritesRepository {
 
     override suspend fun addTrack(track: Track) {
-        appDatabase.trackDao().insertTrack(convertor.map(track))
+        appDatabase.trackDao().insertTrack(convertor.map(track, isFavorite = true))
     }
 
     override suspend fun removeTrack(track: Track) {
-        appDatabase.trackDao().deleteTrack(convertor.map(track))
+        appDatabase.trackDao().deleteTrack(convertor.map(track, isFavorite = false))
     }
 
     override fun getFavoriteTracks(): Flow<List<Track>> {
@@ -27,6 +27,6 @@ class FavoritesRepositoryImpl(
     }
 
     override suspend fun isFavorite(trackId: Long): Boolean {
-        return appDatabase.trackDao().isFavorite(trackId)
+        return appDatabase.trackDao().isFavorite(trackId) ?: false
     }
 }

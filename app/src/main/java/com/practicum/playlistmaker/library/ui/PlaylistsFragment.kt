@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,7 +17,15 @@ class PlaylistsFragment : Fragment() {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistsViewModel by viewModel()
-    private val playlistsAdapter = PlaylistsAdapter()
+    private val playlistsAdapter = PlaylistsAdapter { playlist ->
+        val bundle = Bundle().apply {
+            putInt(PlaylistDetailsFragment.PLAYLIST_ID_KEY, playlist.id)
+        }
+        findNavController().navigate(
+            R.id.action_fragmentMediaLibrary_to_playlistDetailsFragment,
+            bundle
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
