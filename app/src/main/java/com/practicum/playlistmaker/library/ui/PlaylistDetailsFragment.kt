@@ -83,6 +83,32 @@ class PlaylistDetailsFragment : Fragment() {
 
         viewModel.tracksLiveData.observe(viewLifecycleOwner) { tracks ->
             trackAdapter?.updateTracks(tracks)
+
+            if (tracks.isEmpty()) {
+                binding.bottomSheetTracks.rvTracks.visibility = View.GONE
+                binding.bottomSheetTracks.emptyTracksPlaceholder.visibility = View.VISIBLE
+
+                tracksBottomSheetBehavior.isHideable = false
+                tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+                tracksBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                        }
+                    }
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+            } else {
+                binding.bottomSheetTracks.rvTracks.visibility = View.VISIBLE
+                binding.bottomSheetTracks.emptyTracksPlaceholder.visibility = View.GONE
+
+                tracksBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {}
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+            }
+
             viewModel.playlistLiveData.value?.let { playlist ->
                 updatePlaylistStatistics(tracks, playlist)
             }
@@ -263,11 +289,11 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun showDeleteTrackDialog(playlistId: Int, track: Track) {
         MaterialAlertDialogBuilder(requireContext())
-            .setMessage("Хотите удалить трек?")
-            .setNegativeButton("НЕТ") { dialog, _ ->
+            .setMessage(getString(R.string.delete_track_dialog_message))
+            .setNegativeButton(getString(R.string.delete_track_dialog_negative)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("ДА") { _, _ ->
+            .setPositiveButton(getString(R.string.delete_track_dialog_positive)) { _, _ ->
                 viewModel.deleteTrack(playlistId, track.trackId)
             }
             .show()
@@ -275,12 +301,12 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun showDeletePlaylistDialog(playlistId: Int) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Удалить плейлист")
-            .setMessage("Хотите удалить плейлист?")
-            .setNegativeButton("Нет") { dialog, _ ->
+            .setTitle(getString(R.string.delete_playlist_dialog_title))
+            .setMessage(getString(R.string.delete_playlist_dialog_message))
+            .setNegativeButton(getString(R.string.delete_track_dialog_negative)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Да") { _, _ ->
+            .setPositiveButton(getString(R.string.delete_track_dialog_positive)) { _, _ ->
                 viewModel.deletePlaylist(playlistId) {
                     findNavController().navigateUp()
                 }

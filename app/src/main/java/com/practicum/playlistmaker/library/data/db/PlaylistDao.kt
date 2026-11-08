@@ -28,10 +28,11 @@ interface PlaylistDao {
     suspend fun incrementTracksCount(playlistId: Int)
 
     @Query("""
-    SELECT favorite_tracks_table.* FROM favorite_tracks_table 
-    INNER JOIN playlist_track_table ON favorite_tracks_table.trackId = playlist_track_table.trackId 
-    WHERE playlist_track_table.playlistId = :playlistId
-""")
+        SELECT favorite_tracks_table.* FROM favorite_tracks_table 
+        INNER JOIN playlist_track_table ON favorite_tracks_table.trackId = playlist_track_table.trackId 
+        WHERE playlist_track_table.playlistId = :playlistId
+        ORDER BY favorite_tracks_table.createdAt DESC
+    """)
     fun getTracksForPlaylist(playlistId: Int): Flow<List<TrackEntity>>
 
     @Query("DELETE FROM playlist_track_table WHERE playlistId = :playlistId AND trackId = :trackId")

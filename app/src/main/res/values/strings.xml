@@ -41,7 +41,13 @@
     <string name="edit_playlist">Редактировать плейлист</string>
     <string name="delete_playlist">Удалить плейлист</string>
     <string name="edit_playlist_title">Редактировать</string>
-    <string name="edit_playlist_save_button">Сохранить</string>
+    <string name="edit_playlist_save_button">Сохранить</string>playlist
+    <string name="playlist_no_tracks">В этом плейлисте нет треков</string>
+    <string name="delete_track_dialog_message">Хотите удалить трек?</string>
+    <string name="delete_track_dialog_negative">НЕТ</string>
+    <string name="delete_track_dialog_positive">ДА</string>
+    <string name="delete_playlist_dialog_title">Удалить плейлист</string>
+    <string name="delete_playlist_dialog_message">Хотите удалить плейлист?</string>
 
 
     <plurals name="tracks_count">
